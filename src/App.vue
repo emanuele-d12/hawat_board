@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import NewTask from './components/NewTask.vue'
 import ListTasks from './components/ListTasks.vue'
+import TaskColumn from './components/TaskColumn.vue'
 
 import type {Task} from './types/task'
 
@@ -21,7 +22,7 @@ function toggleTask(taskToToggle: Task){
 </script>
 
 <template>
-  <main class="min-h-screen p-8">
+  <main  class="min-h-screen p-8">
     <NewTask @add-task="handleAddTask"/>
     <ListTasks 
       :tasks="tasks"

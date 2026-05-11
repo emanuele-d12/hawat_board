@@ -1,0 +1,64 @@
+<script setup lang="ts">
+import type { Task, Category } from '../types/task'
+
+defineProps<{
+    title: string
+    tasks: Task[]
+    category: Category
+}>()
+
+const emit = defineEmits<{
+    (e: 'delete-task', task: Task): void
+    (e: 'toggle-task', task: Task): void
+}>()
+
+</script>
+
+<template>
+    <div class="min-w-[320px] w-full lg:w-1/3 flex-shrink-0 bg-white rounded-3xl border border-gray-200 shadow-sm">
+        <!-- HEADER -->
+        <div class="flex items-center justify-between p-5 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-800">
+                {{ title }}
+            </h2>
+
+            <span class="text-sm bg-gray-100 px-3 py-1 rounded-full">
+                {{ tasks.length }}
+            </span>
+        </div>
+    </div>
+
+    <!-- BODY -->
+
+    <div class="p-5 space-y-3 min-h-[400px]">
+        <div v-for="(task, index) in tasks" :key="index"
+            class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
+                ? 'border-green-300 bg-green-50'
+                : 'border-gray-200'">
+            <div class="flex items-center justify-between gap-3">
+
+                <span class="font-medium" :class="task.completed
+                    ? 'line-through text-gray-400'
+                    : 'text-gray-800'">
+                    {{ task.title }}
+                </span>
+
+                <div class="flex gap-2">
+
+                    <button @click="emit('toggle-task', task)"
+                        class="w-8 h-8 rounded-lg bg-green-500 text-white hover:scale-105 transition">
+                        ✓
+                    </button>
+
+                    <button @click="emit('delete-task', task)"
+                        class="w-8 h-8 rounded-lg bg-red-500 text-white hover:scale-105 transition">
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</template>
