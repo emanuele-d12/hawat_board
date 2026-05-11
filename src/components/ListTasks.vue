@@ -37,7 +37,7 @@ const backlogTasks = computed(() => {
             <div class="space-y-3">
                 <div 
                     v-for="(task, index) in dailyTasks" 
-                    :key="index" class="p-3 border rounded-xl bg-gray-50"
+                    :key="index" class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition cursor-pointer"
                     :class="task.completed"
                     >
 
@@ -47,7 +47,7 @@ const backlogTasks = computed(() => {
                         </span>
                         <div class="flex gap-2">
                             <button @click="emit('toggle-task', task)"
-                                class="px-2 py-1 rounded bg-green-500 text-white text-sm">
+                                class="px-2 py-1 rounded bg-emerald-500 text-white text-sm">
                                 ✔
                             </button>
                             <button @click="emit('delete-task', task)"
@@ -69,7 +69,7 @@ const backlogTasks = computed(() => {
                 <div 
                     v-for="(task, index) in weeklyTasks" 
                     :key="index" 
-                    class="p-3 border rounded-xl bg-gray-50" 
+                    class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition cursor-pointer" 
                     :class="task.completed">
                     <div class="flex items-center justify-between gap-3">
                         <span :class="task.completed ? 'line-through' : ''">
@@ -77,7 +77,7 @@ const backlogTasks = computed(() => {
                         </span>
                         <div class="flex gap-2">
                             <button @click="emit('toggle-task', task)"
-                                class="px-2 py-1 rounded bg-green-500 text-white text-sm">
+                                class="px-2 py-1 rounded bg-emerald-500 text-white text-sm">
                                 ✔
                             </button>
                             <button @click="emit('delete-task', task)"
@@ -99,7 +99,7 @@ const backlogTasks = computed(() => {
                 <div 
                     v-for="(task, index) in backlogTasks" 
                     :key="index" 
-                    class="p-3 border rounded-xl bg-gray-50" 
+                    class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition cursor-pointer" 
                     :class="task.completed">
                     <div class="flex items-center justify-between gap-3">
                         <span :class="task.completed ? 'line-through' : ''">
@@ -107,7 +107,7 @@ const backlogTasks = computed(() => {
                         </span>
                         <div class="flex gap-2">
                             <button @click="emit('toggle-task', task)"
-                                class="px-2 py-1 rounded bg-green-500 text-white text-sm">
+                                class="px-2 py-1 rounded bg-emerald-500 text-white text-sm">
                                 ✔
                             </button>
                             <button @click="emit('delete-task', task)"
