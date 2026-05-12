@@ -15,7 +15,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="min-w-[320px] w-full lg:w-1/3 flex-shrink-0 bg-white rounded-3xl border border-gray-200 shadow-sm">
+    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm">
         <!-- HEADER -->
         <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="text-lg font-semibold text-gray-800">

@@ -1,5 +1,3 @@
-import { categories } from "./categories"
-
 export type Task = {
   title: string
   category: Category
@@ -7,7 +5,12 @@ export type Task = {
 
 }
 
-export type Category = typeof categories[number]['value']
+export type Category = string
+
+export type CategoryData = {
+  title: string
+  value: Category
+}
 
 export type TaskPayload = {
     title: string
