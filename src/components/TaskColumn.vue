@@ -26,37 +26,37 @@ const emit = defineEmits<{
                 {{ tasks.length }}
             </span>
         </div>
-    </div>
 
-    <!-- BODY -->
+        <!-- BODY -->
 
-    <div class="p-5 space-y-3 min-h-[400px]">
-        <div v-for="(task, index) in tasks" :key="index"
-            class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
-                ? 'border-green-300 bg-green-50'
-                : 'border-gray-200'">
-            <div class="flex items-center justify-between gap-3">
+        <div class="p-5 space-y-3 min-h-[400px]">
+            <div v-for="(task, index) in tasks" :key="index"
+                class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
+                    ? 'border-green-300 bg-green-50'
+                    : 'border-gray-200'">
+                <div class="flex items-center justify-between gap-3">
 
-                <span class="font-medium" :class="task.completed
-                    ? 'line-through text-gray-400'
-                    : 'text-gray-800'">
-                    {{ task.title }}
-                </span>
+                    <span class="font-medium" :class="task.completed
+                        ? 'line-through text-gray-400'
+                        : 'text-gray-800'">
+                        {{ task.title }}
+                    </span>
 
-                <div class="flex gap-2">
+                    <div class="flex gap-2">
 
-                    <button @click="emit('toggle-task', task)"
-                        class="w-8 h-8 rounded-lg bg-green-500 text-white hover:scale-105 transition">
-                        ✓
-                    </button>
+                        <button @click="emit('toggle-task', task)"
+                            class="w-8 h-8 rounded-lg bg-green-500 text-white hover:scale-105 transition">
+                            ✓
+                        </button>
 
-                    <button @click="emit('delete-task', task)"
-                        class="w-8 h-8 rounded-lg bg-red-500 text-white hover:scale-105 transition">
-                        ×
-                    </button>
+                        <button @click="emit('delete-task', task)"
+                            class="w-8 h-8 rounded-lg bg-red-500 text-white hover:scale-105 transition">
+                            ×
+                        </button>
+
+                    </div>
 
                 </div>
-
             </div>
         </div>
     </div>

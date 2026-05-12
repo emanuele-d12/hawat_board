@@ -2,26 +2,10 @@
 import { ref } from 'vue';
 
 import type { TaskPayload, Category } from '../types/task'
+import { categories } from '../types/categories'
 
 const taskTitle = ref<string>('')
 const selectedCategory = ref<Category>('backlog')
-
-
-const categories: {
-    label: String
-    value: Category
-}[] = [
-        {
-            label: 'Quotidiane',
-            value: 'daily',
-        }, {
-            label: 'Questa settimana',
-            value: 'weekly',
-        }, {
-            label: 'Backlog',
-            value: 'backlog',
-        }
-    ]
 
 const emit = defineEmits<{
     (e: 'add-task', payload: TaskPayload): void
@@ -61,7 +45,7 @@ function addTask() {
                     ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
                     : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
                     ">
-                {{ category.label }}
+                {{ category.title }}
             </button>
 
             
