@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
 
 import type { Task, CategoryData } from './types/task'
 
-const tasks = ref<Task[]>([])
+const tasks = ref<Task[]>(
+  JSON.parse(
+    localStorage.getItem('tasks') || '[]'
+  )
+)
 
-const categories = ref<CategoryData[]>([
+const categories = ref<CategoryData[]>(
+  JSON.parse(
+    localStorage.getItem('categories') || 'null'
+  ) || [
   {
     title: 'Quotidiane',
     value: 'daily',
@@ -21,6 +28,8 @@ const categories = ref<CategoryData[]>([
     value: 'backlog',
   },
 ])
+
+
 
 
 function handleAddTask(task: Task) {
@@ -59,6 +68,29 @@ const tasksByCategory = computed(() => {
     ),
   }))
 })
+
+
+watch(
+  tasks,
+  (newTasks) => {
+    localStorage.setItem(
+      'tasks',
+      JSON.stringify(newTasks)
+    )
+  },
+  {deep: true}
+)
+
+watch(
+  categories,
+  (newCategories) => {
+    localStorage.setItem(
+      'categories',
+      JSON.stringify(newCategories)
+    )
+  },
+  { deep: true }
+)
 </script>
 
 <template>
