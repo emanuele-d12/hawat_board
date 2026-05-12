@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
+import Sortable from 'sortablejs'
 
 import type { Task, CategoryData } from './types/task'
 
@@ -30,7 +31,7 @@ const categories = ref<CategoryData[]>(
 ])
 
 
-
+const categoriesContainer = ref<HTMLElement | null>(null)
 
 function handleAddTask(task: Task) {
   tasks.value.push(task)
@@ -69,6 +70,35 @@ const tasksByCategory = computed(() => {
   }))
 })
 
+onMounted(() => {
+  if (!categoriesContainer.value) return
+
+  Sortable.create(categoriesContainer.value, {
+    animation: 200,
+
+    onEnd(event) {
+      if (
+        event.oldIndex == null ||
+        event.newIndex == null
+      ) {
+        return
+      }
+
+      const updatedCategories = [...categories.value]
+
+      const movedCategory =
+        updatedCategories.splice(event.oldIndex, 1)[0]
+
+      updatedCategories.splice(
+        event.newIndex,
+        0,
+        movedCategory
+      )
+
+      categories.value = updatedCategories
+    },
+  })
+})
 
 watch(
   tasks,
@@ -104,7 +134,7 @@ watch(
       :categories="categories" 
     />
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
       <TaskColumn 
         v-for="category in tasksByCategory" 
         :key="category.value" 
