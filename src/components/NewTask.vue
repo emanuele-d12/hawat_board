@@ -35,7 +35,8 @@ function addTask() {
     emit('add-task', {
         title: taskTitle.value,
         category: selectedCategory.value,
-        completed: false
+        completed: false,
+        order: Date.now()
     })
 
     taskTitle.value = ''

@@ -16,4 +16,5 @@ export type TaskPayload = {
     title: string
     category: Category
     completed: Boolean
+    order: number
 }

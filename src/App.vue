@@ -16,20 +16,19 @@ const categories = ref<CategoryData[]>(
   JSON.parse(
     localStorage.getItem('categories') || 'null'
   ) || [
-  {
-    title: 'Quotidiane',
-    value: 'daily',
-  },
-  {
-    title: 'Questa settimana',
-    value: 'weekly',
-  },
-  {
-    title: 'Backlog',
-    value: 'backlog',
-  },
-])
-
+    {
+      title: 'Quotidiane',
+      value: 'daily',
+    },
+    {
+      title: 'Questa settimana',
+      value: 'weekly',
+    },
+    {
+      title: 'Backlog',
+      value: 'backlog',
+    },
+  ])
 
 const categoriesContainer = ref<HTMLElement | null>(null)
 
@@ -61,14 +60,40 @@ function toggleTask(taskToToggle: Task) {
 }
 
 
-const tasksByCategory = computed(() => {
-  return categories.value.map(category => ({
-    ...category,
-    tasks: tasks.value.filter(
-      task => task.category === category.value
-    ),
-  }))
-})
+function getTasksByCategory(categoryValue: string) {
+  return tasks.value
+    .filter(task => task.category === categoryValue)
+    .sort((a, b) => a.order - b.order)
+}
+
+function reorderTask(payload: {
+  oldIndex: number
+  newIndex: number
+  category: string
+}) {
+    console.log('payload.category:', payload.category)
+
+  const categoryTasks = getTasksByCategory(
+    payload.category
+  )
+
+  console.log('categoryTasks:', categoryTasks)
+
+  const movedTask =
+    categoryTasks.splice(payload.oldIndex, 1)[0]
+
+  console.log('movedTask:', movedTask)
+
+  categoryTasks.splice(
+    payload.newIndex,
+    0,
+    movedTask
+  )
+
+  categoryTasks.forEach((task, index) => {
+    task.order = index
+  })
+}
 
 onMounted(() => {
   if (!categoriesContainer.value) return
@@ -108,7 +133,7 @@ watch(
       JSON.stringify(newTasks)
     )
   },
-  {deep: true}
+  { deep: true }
 )
 
 watch(
@@ -126,23 +151,19 @@ watch(
 <template>
   <main class="min-h-screen p-8">
 
-    <NewTask 
-      @add-task="handleAddTask" 
-      @add-category="handleAddCategory"
-      @delete-category="deleteCategory"
-
-      :categories="categories" 
-    />
+    <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
+      :categories="categories" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
       <TaskColumn 
-        v-for="category in tasksByCategory" 
+        v-for="category in categories" 
         :key="category.value" 
         :title="category.title"
         :category="category.value" 
-        :tasks="category.tasks" 
+        :tasks="getTasksByCategory(category.value)" 
         @delete-task="deleteTask" 
         @toggle-task="toggleTask" 
+        @reorder-task="reorderTask" 
       />
     </div>
   </main>

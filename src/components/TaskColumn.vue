@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import {ref, onMounted } from 'vue'
+import Sortable from 'sortablejs' 
+
 import type { Task, Category } from '../types/task'
 
-defineProps<{
+const props = defineProps<{
     title: string
     tasks: Task[]
     category: Category
@@ -10,8 +13,37 @@ defineProps<{
 const emit = defineEmits<{
     (e: 'delete-task', task: Task): void
     (e: 'toggle-task', task: Task): void
+    (e: 'reorder-task', payload: {
+            oldIndex: number
+            newIndex: number
+            category: string
+    }): void
 }>()
 
+const taskContainer = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+    if(!taskContainer.value) return
+
+    Sortable.create(taskContainer.value, {
+        animation:150,
+
+        onEnd(event){
+            if(
+                event.oldIndex == null ||
+                event.newIndex == null 
+            ) {
+                return
+            }
+            emit('reorder-task', {
+                oldIndex: event.oldIndex,
+                newIndex: event.newIndex,
+                category: props.category
+            })
+        }
+    }
+    )
+})
 </script>
 
 <template>
@@ -29,7 +61,7 @@ const emit = defineEmits<{
 
         <!-- BODY -->
 
-        <div class="p-5 space-y-3 min-h-[400px]">
+        <div ref="taskContainer" class="p-5 space-y-3 min-h-[400px]">
             <div v-for="(task, index) in tasks" :key="index"
                 class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
                     ? 'border-green-300 bg-green-50'
