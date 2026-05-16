@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import type { TaskPayload, Category, CategoryData } from '../types/task'
 
 const taskTitle = ref<string>('')
 const selectedCategory = ref<Category>('backlog')
+const taskInput = ref<HTMLInputElement | null>(null)
 
-defineProps<{
+const props = defineProps<{
     categories: CategoryData[]
+    editingTaskTitle:string
 }>()
 
 const emit = defineEmits<{
@@ -41,7 +43,18 @@ function addTask() {
     })
 
     taskTitle.value = ''
+
+    taskInput.value?.focus()
 }
+
+watch(
+  () => props.editingTaskTitle,
+  (newValue) => {
+    taskTitle.value = newValue
+
+    taskInput.value?.focus()
+  }
+)
 
 </script>
 
@@ -52,7 +65,7 @@ function addTask() {
         </h2>
 
         <div class="flex flex-col gap-4">
-            <input v-model="taskTitle" type="text" placeholder="Inserisci un task..."
+            <input ref="taskInput" v-model="taskTitle" type="text" placeholder="Inserisci un task..." @keydown.enter="addTask" 
                 class="w-full rounded-2xl border border-gray-300 mb-5 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
 
 

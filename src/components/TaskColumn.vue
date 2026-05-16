@@ -11,6 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+    (e: 'edit-task',   task: Task): void
     (e: 'delete-task', task: Task): void
     (e: 'toggle-task', task: Task): void
     (e: 'reorder-task', payload: {
@@ -80,9 +81,10 @@ onMounted(() => {
 
         <div ref="taskContainer" class="p-5 space-y-3 min-h-[400px]">
             <div v-for="(task, index) in tasks" :key="task.id" :data-task-id="task.id"
-                class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
+                class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed 
                     ? 'border-green-300 bg-green-50'
-                    : 'border-gray-200'">
+                    : 'border-gray-200'"
+                    @dblclick="emit('edit-task', task)">
                 <div class="flex items-center justify-between gap-3">
 
                     <span class="font-medium" :class="task.completed

@@ -62,6 +62,13 @@ function toggleTask(taskToToggle: Task) {
   taskToToggle.completed = !taskToToggle.completed
 }
 
+const editingTaskTitle = ref<string>('')
+
+function editTask(task: Task){
+  editingTaskTitle.value = task.title
+
+  deleteTask(task)
+}
 
 function getTasksByCategory(categoryValue: string) {
   return tasks.value
@@ -193,12 +200,12 @@ watch(
   <main class="min-h-screen p-8">
 
     <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
-      :categories="categories" />
+      :categories="categories" :editing-task-title="editingTaskTitle"/>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
       <TaskColumn v-for="category in categories" :key="category.value" :title="category.title"
         :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
-        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" />
+        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @edit-task="editTask"/>
     </div>
   </main>
 </template>
