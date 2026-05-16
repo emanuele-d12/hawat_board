@@ -142,6 +142,31 @@ function moveTask(payload: {
 
 }
 
+function exportAll() {
+
+  const rows = categories.value.map(category => {
+    const filteredTasks = tasks.value
+    .filter(t => t.category === category.value)
+    .sort(function(a,b) {return a.order - b.order})
+    .map(t => t.title)
+
+    return category.value + '\n\n' + filteredTasks.join('\n') + '\n\n'
+  })
+
+  let content = rows.join('\n')
+
+  const blob = new Blob([content], {
+      type: 'text/plain',
+  })
+
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `MyBoard.txt`
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
 onMounted(() => {
 
   if (!categoriesContainer.value) return
@@ -201,11 +226,12 @@ watch(
 
     <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
       :categories="categories" :editing-task-title="editingTaskTitle"/>
+      <button class="my-4 p-2 bg-emerald-500 font-bold text-white rounded-xl cursor-pointer" @click="exportAll">Export All</button>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
       <TaskColumn v-for="category in categories" :key="category.value" :title="category.title"
         :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
         @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @edit-task="editTask"/>
-    </div>
+      </div>
   </main>
 </template>
