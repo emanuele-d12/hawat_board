@@ -1,8 +1,8 @@
 export type Task = {
   title: string
   category: Category
-    completed: Boolean
-
+  completed: Boolean
+  order: number
 }
 
 export type Category = string

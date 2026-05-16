@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
 import Sortable from 'sortablejs'
@@ -77,12 +77,9 @@ function reorderTask(payload: {
     payload.category
   )
 
-  console.log('categoryTasks:', categoryTasks)
 
   const movedTask =
     categoryTasks.splice(payload.oldIndex, 1)[0]
-
-  console.log('movedTask:', movedTask)
 
   categoryTasks.splice(
     payload.newIndex,
