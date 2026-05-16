@@ -33,10 +33,12 @@ const categories = ref<CategoryData[]>(
 const categoriesContainer = ref<HTMLElement | null>(null)
 
 function handleAddTask(task: Task) {
+  console.log('adding task: ', task)
   tasks.value.push(task)
 }
 
 function handleAddCategory(title: string) {
+  console.log('lista task', tasks.value)
   categories.value.push({
     title,
     value: title
@@ -52,6 +54,7 @@ function deleteCategory(categoryToDelete: string) {
 }
 
 function deleteTask(taskToDelete: Task) {
+  console.log('deleting: ', taskToDelete)
   tasks.value = tasks.value.filter(task => task !== taskToDelete)
 }
 
@@ -71,12 +74,13 @@ function reorderTask(payload: {
   newIndex: number
   category: string
 }) {
-    console.log('payload.category:', payload.category)
+  console.log('reordering category', payload.category)
 
   const categoryTasks = getTasksByCategory(
     payload.category
   )
 
+  if (!categoryTasks.length) return
 
   const movedTask =
     categoryTasks.splice(payload.oldIndex, 1)[0]
@@ -92,7 +96,47 @@ function reorderTask(payload: {
   })
 }
 
+function moveTask(payload: {
+  taskId: string
+  newIndex: number
+  newCategory: string
+}) {
+
+  const movedTask = tasks.value.find(task => task.id === payload.taskId)
+
+  if (!movedTask) return
+
+  console.log('moving task: ', movedTask.title)
+  console.log('oldCategory', movedTask.category)
+  console.log('newCategory', payload.newCategory)
+
+  const oldCategory = movedTask.category
+  movedTask.category = payload.newCategory
+
+  const newCategoryTasks = getTasksByCategory(payload.newCategory).filter(task => task.id !== movedTask.id)
+
+  newCategoryTasks.splice(
+    payload.newIndex,
+    0,
+    movedTask
+  )
+
+  newCategoryTasks.forEach((task, index) => {
+    task.order = index
+  })
+
+  const oldCategoryTasks = getTasksByCategory(
+    oldCategory
+  )
+
+  oldCategoryTasks.forEach((task, index) => {
+    task.order = index
+  })
+
+}
+
 onMounted(() => {
+
   if (!categoriesContainer.value) return
 
   Sortable.create(categoriesContainer.value, {
@@ -152,16 +196,9 @@ watch(
       :categories="categories" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
-      <TaskColumn 
-        v-for="category in categories" 
-        :key="category.value" 
-        :title="category.title"
-        :category="category.value" 
-        :tasks="getTasksByCategory(category.value)" 
-        @delete-task="deleteTask" 
-        @toggle-task="toggleTask" 
-        @reorder-task="reorderTask" 
-      />
+      <TaskColumn v-for="category in categories" :key="category.value" :title="category.title"
+        :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
+        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" />
     </div>
   </main>
 </template>

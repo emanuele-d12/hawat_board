@@ -18,6 +18,11 @@ const emit = defineEmits<{
             newIndex: number
             category: string
     }): void
+    (e: 'move-task', payload: {
+            taskId: string
+            newIndex: number
+            newCategory: string
+    }): void
 }>()
 
 const taskContainer = ref<HTMLElement | null>(null)
@@ -27,7 +32,19 @@ onMounted(() => {
 
     Sortable.create(taskContainer.value, {
         animation:150,
+        group:'tasks',
+        onAdd(event){
+            const taskId = 
+                event.item.getAttribute('data-task-id')
 
+            if (!taskId) return
+
+            emit('move-task', {
+                taskId,
+                newCategory: props.category,
+                newIndex: event.newIndex ?? 0
+            })
+        },
         onEnd(event){
             if(
                 event.oldIndex == null ||
@@ -62,7 +79,7 @@ onMounted(() => {
         <!-- BODY -->
 
         <div ref="taskContainer" class="p-5 space-y-3 min-h-[400px]">
-            <div v-for="(task, index) in tasks" :key="index"
+            <div v-for="(task, index) in tasks" :key="task.id" :data-task-id="task.id"
                 class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
                     ? 'border-green-300 bg-green-50'
                     : 'border-gray-200'">

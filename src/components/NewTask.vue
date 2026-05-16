@@ -33,6 +33,7 @@ function addTask() {
     if (!taskTitle.value.trim()) return
 
     emit('add-task', {
+        id: crypto.randomUUID(),
         title: taskTitle.value,
         category: selectedCategory.value,
         completed: false,

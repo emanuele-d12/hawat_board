@@ -1,4 +1,5 @@
 export type Task = {
+  id: string
   title: string
   category: Category
   completed: Boolean
@@ -13,6 +14,7 @@ export type CategoryData = {
 }
 
 export type TaskPayload = {
+    id: string
     title: string
     category: Category
     completed: Boolean
