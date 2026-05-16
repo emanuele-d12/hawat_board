@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {ref, onMounted } from 'vue'
-import Sortable from 'sortablejs' 
+import { ref, onMounted } from 'vue'
+import Sortable from 'sortablejs'
 
 import type { Task, Category } from '../types/task'
 
@@ -11,31 +11,50 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'edit-task',   task: Task): void
+    (e: 'edit-task', task: Task): void
     (e: 'delete-task', task: Task): void
     (e: 'toggle-task', task: Task): void
     (e: 'reorder-task', payload: {
-            oldIndex: number
-            newIndex: number
-            category: string
+        oldIndex: number
+        newIndex: number
+        category: string
     }): void
     (e: 'move-task', payload: {
-            taskId: string
-            newIndex: number
-            newCategory: string
+        taskId: string
+        newIndex: number
+        newCategory: string
     }): void
 }>()
 
 const taskContainer = ref<HTMLElement | null>(null)
 
+function exportTasks() {
+    const content = props.tasks
+        .map(task => {
+            return `${task.title}`
+        })
+        .join('\n')
+
+    const blob = new Blob([content], {
+        type: 'text/plain',
+    })
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${props.category}.txt`
+    link.click()
+    URL.revokeObjectURL(url)
+}
+
 onMounted(() => {
-    if(!taskContainer.value) return
+    if (!taskContainer.value) return
 
     Sortable.create(taskContainer.value, {
-        animation:150,
-        group:'tasks',
-        onAdd(event){
-            const taskId = 
+        animation: 150,
+        group: 'tasks',
+        onAdd(event) {
+            const taskId =
                 event.item.getAttribute('data-task-id')
 
             if (!taskId) return
@@ -46,10 +65,10 @@ onMounted(() => {
                 newIndex: event.newIndex ?? 0
             })
         },
-        onEnd(event){
-            if(
+        onEnd(event) {
+            if (
                 event.oldIndex == null ||
-                event.newIndex == null 
+                event.newIndex == null
             ) {
                 return
             }
@@ -71,20 +90,25 @@ onMounted(() => {
             <h2 class="text-lg font-semibold text-gray-800">
                 {{ title }}
             </h2>
+            <div class="flex gap-3">
 
-            <span class="text-sm bg-gray-100 px-3 py-1 rounded-full">
-                {{ tasks.length }}
-            </span>
+                <span class="text-sm bg-gray-100 px-3 py-1 rounded-full">
+                    {{ tasks.length }}
+                </span>
+                
+                <button @click="exportTasks" class="text-xs px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-100">
+                    export
+                </button>
+            </div>
         </div>
 
         <!-- BODY -->
 
         <div ref="taskContainer" class="p-5 space-y-3 min-h-[400px]">
             <div v-for="(task, index) in tasks" :key="task.id" :data-task-id="task.id"
-                class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed 
+                class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
                     ? 'border-green-300 bg-green-50'
-                    : 'border-gray-200'"
-                    @dblclick="emit('edit-task', task)">
+                    : 'border-gray-200'" @dblclick="emit('edit-task', task)">
                 <div class="flex items-center justify-between gap-3">
 
                     <span class="font-medium" :class="task.completed
