@@ -1,14 +1,30 @@
 services:
   frontend:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile.dev  
 
+    container_name: Hawat-frontend
+    
     ports:
       - "5173:5173"
 
     volumes:
       - .:/app
       - /app/node_modules
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+
+    container_name: Hawat-backend
+
+    ports:
+        - "3000:3000"
+
+    volumes:
+        - ./backend:/app
+        - /app/node_modules
 
 
