@@ -6,6 +6,8 @@ import Sortable from 'sortablejs'
 
 import type { Task, CategoryData } from './types/task'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const tasks = ref<Task[]>(
   JSON.parse(
     localStorage.getItem('tasks') || '[]'
@@ -196,6 +198,14 @@ onMounted(() => {
       categories.value = updatedCategories
     },
   })
+})
+
+onMounted(async () => {
+  const response = await fetch(`${API_URL}/api/health`)
+
+  const data = await response.json()
+
+  console.log(data)
 })
 
 watch(
