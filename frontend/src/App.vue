@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { ref, watch, onMounted } from 'vue';
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
@@ -17,20 +18,7 @@ const tasks = ref<Task[]>(
 const categories = ref<CategoryData[]>(
   JSON.parse(
     localStorage.getItem('categories') || 'null'
-  ) || [
-    {
-      title: 'Quotidiane',
-      value: 'daily',
-    },
-    {
-      title: 'Questa settimana',
-      value: 'weekly',
-    },
-    {
-      title: 'Backlog',
-      value: 'backlog',
-    },
-  ])
+  ) || [])
 
 const categoriesContainer = ref<HTMLElement | null>(null)
 
