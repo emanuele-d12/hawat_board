@@ -1,136 +1,155 @@
-# Todo board
+# hawat_board
 
-A modern Kanban-style task manager built with Vue 3, TypeScript and Tailwind CSS.
+A lightweight self-hosted Kanban board built with Vue 3, TypeScript and Vite.
 
-This project was created as a learning and experimentation environment for:
-- Vue 3 Composition API
-- TypeScript
-- Drag & Drop interfaces
-- Component architecture
-- Dockerized frontend workflows
-- Responsive UI development
+Designed to be simple, fast and extensible, with support for drag & drop task management, dynamic categories and Docker-based deployment.
 
 ---
 
-# Features
+## Features
 
-## Task Management
-- Create tasks with keyboard support (`Enter` to submit)
-- Multiple categories support
-- Dynamic category creation
-- Delete tasks
-- Mark tasks as completed
-- Quick edit tasks with double click
-- Persistent local storage
-
----
-
-## Drag & Drop
-- Reorder tasks inside categories
-- Move tasks between categories
-- Reorder categories
-- SortableJS integration
+- ✅ Dynamic task categories
+- ✅ Drag & drop task management
+- ✅ Cross-column task movement
+- ✅ Persistent local storage
+- ✅ Reorderable columns
+- ✅ Plaintext export
+- ✅ Responsive UI
+- ✅ Docker support
+- ✅ Nginx production serving
+- 🚧 Backend synchronization (WIP)
+- 🚧 Shared boards (planned)
+- 🚧 Real-time collaboration (planned)
 
 ---
 
-## Responsive UI
-- Mobile-first responsive layout
-- Equal-width category buttons
-- Flexible task columns
-- Tailwind CSS styling
+## Tech Stack
 
----
-
-## Export
-- Export category tasks as `.txt` files
-
----
-
-## Persistence
-Currently the project uses:
-- Browser `localStorage`
-
-Planned:
-- Shared JSON backend
-- Multi-device synchronization
-- Dynamic board URLs
-
----
-
-# Tech Stack
-
-## Frontend
 - Vue 3
 - TypeScript
 - Vite
 - Tailwind CSS
 - SortableJS
-
-## DevOps / Deployment
 - Docker
-- Docker Compose
 - Nginx
+- Express (backend WIP)
 
 ---
 
-# Project Structure
 
-```text
-src/
- ├── components/
- │    ├── NewTask.vue
- │    ├── TaskColumn.vue
- │
- ├── types/
- │    ├── task.ts
- │
- ├── App.vue
+## Architecture
+
+```txt
+Frontend (Vue 3 + TypeScript)
+        ↓
+Reactive State Management
+        ↓
+LocalStorage Persistence
+        ↓
+Future Express API Backend
 ```
 
 ---
 
-# Development Setup
+## Project Structure
 
-## Install dependencies
+```txt
+.
+├── src
+│   ├── components
+│   │   ├── ListTasks.vue
+│   │   ├── NewTask.vue
+│   │   └── TaskColumn.vue
+│   ├── router
+│   ├── types
+│   ├── assets
+│   ├── App.vue
+│   ├── main.ts
+│   └── style.css
+├── public
+├── local
+├── Dockerfile
+├── Dockerfile.dev
+├── nginx.conf
+├── package.json
+└── vite.config.ts
+```
+
+---
+
+## Core Concepts
+
+### Dynamic Categories
+
+Categories are fully dynamic and can be:
+
+- created at runtime
+- reordered
+- removed
+- used as drag & drop containers
+
+Unlike traditional todo apps, columns are not hardcoded.
+
+---
+
+### Drag & Drop System
+
+Tasks can be:
+
+- reordered inside the same column
+- moved across categories
+- persisted automatically
+
+Powered by SortableJS.
+
+---
+
+### Persistent Ordering
+
+Each task contains an internal order index:
+
+```ts
+task.order
+```
+
+This guarantees stable rendering and persistent ordering across reloads.
+
+---
+
+### Export System
+
+The board supports plaintext export for:
+
+- single categories
+- entire boards
+
+Useful for notes, backups or external sharing.
+
+---
+
+## Development
+
+### Install dependencies
 
 ```bash
 npm install
 ```
 
----
-
-## Run locally
+### Start development server
 
 ```bash
 npm run dev
 ```
 
----
-
-# Docker Development Environment
-
-The project includes a dedicated Docker development environment with:
-- hot reload
-- mounted volumes
-- isolated dependencies
-
-## Start development container
-
-```bash
-docker compose up --build
-```
-
 Application will be available at:
 
-```text
+```txt
 http://localhost:5173
 ```
 
 ---
 
-# Production Build
-
-## Build manually
+## Production Build
 
 ```bash
 npm run build
@@ -138,64 +157,84 @@ npm run build
 
 ---
 
-# Production Docker Environment
+## Docker
 
-The production setup uses:
-- multi-stage Docker build
-- Nginx static serving
-- optimized Vite build
-
-## Start production container
+### Build image
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker build -t hawat_board .
+```
+
+### Run container
+
+```bash
+docker run -p 8080:80 hawat_board
 ```
 
 Application will be available at:
 
-```text
-http://localhost:8099
+```txt
+http://localhost:8080
 ```
 
 ---
 
-# Current Architecture
+## Docker Compose
 
-```text
-Vue 3 App
-   ↓
-LocalStorage Persistence
+### Development
+
+```bash
+docker compose up
+```
+
+### Production
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 ---
 
-# Planned Features
+## Backend (Work In Progress)
 
-- Node.js backend
-- Shared JSON storage
-- Multi-device synchronization
-- Dynamic boards (`/work`, `/shopping`, etc.)
-- Vue Router integration
-- Real-time collaboration
-- Authentication
-- Cloud synchronization
+A backend service based on Express is currently being prepared for:
 
----
+- board persistence
+- shared boards
+- synchronization
+- multi-user support
 
-# Learning Goals
-
-This project focuses on practicing:
-- Vue Composition API
-- Reactive state management
-- Component communication
-- Drag & Drop logic
-- TypeScript typing
-- Docker workflows
-- Frontend architecture
-- Deployment strategies
+Current architecture already anticipates backend integration.
 
 ---
 
-# License
+## Roadmap
 
-PolyForm Noncommercial 1.0.0
+### Short Term
+
+- [ ] Backend persistence
+- [ ] Better mobile UX
+- [ ] Dark mode
+- [ ] Improved export formatting
+
+### Mid Term
+
+- [ ] Multi-board support
+- [ ] URL-based boards
+- [ ] Shared workspaces
+- [ ] Authentication
+
+### Long Term
+
+- [ ] Real-time collaboration
+- [ ] WebSocket sync
+- [ ] User permissions
+- [ ] Offline-first support
+
+---
+
+## License
+
+MIT
+
+```
