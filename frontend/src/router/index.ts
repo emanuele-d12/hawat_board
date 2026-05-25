@@ -1,17 +1,51 @@
-import { createRouter, createWebHistory} from "vue-router"
-import { v4 as uuidv4 } from "uuid"
+import {
+    createRouter,
+    createWebHistory,
+    type RouteRecordRaw,
+} from "vue-router"
 import App from '../App.vue'
+import { createBoard } from "../services/api"
 
-const routes = [
+const EmptyComponent = {
+    template: '<div></div>',
+}
+
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        redirect: () => `/${uuidv4()}`,
+        component: EmptyComponent,
+
+        beforeEnter: async () => {
+            const uuid = crypto.randomUUID()
+
+            try {
+                await createBoard(uuid)
+
+                return `/${uuid}`
+            } catch (error) {
+                console.error(error)
+
+                return false
+            }
+        },
     },
     {
         path: '/:boardId',
         component: App,
-    }
+    },
 ]
+
+
+// const routes = [
+//     {
+//         path: '/',
+//         redirect: () => `/${uuidv4()}`,
+//     },
+//     {
+//         path: '/:boardId',
+//         component: App,
+//     }
+// ]
 
 const router = createRouter({
     history: createWebHistory(),
