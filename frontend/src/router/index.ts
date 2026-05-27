@@ -36,17 +36,6 @@ const routes: RouteRecordRaw[] = [
 ]
 
 
-// const routes = [
-//     {
-//         path: '/',
-//         redirect: () => `/${uuidv4()}`,
-//     },
-//     {
-//         path: '/:boardId',
-//         component: App,
-//     }
-// ]
-
 const router = createRouter({
     history: createWebHistory(),
     routes,

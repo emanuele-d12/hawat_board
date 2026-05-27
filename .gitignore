@@ -34,4 +34,7 @@ frontend/local/*
 *.sln
 *.sw?
 
+#Local Data
+backend/data
+
 

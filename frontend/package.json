@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
+    "lodash.debounce": "^4.0.8",
     "sortablejs": "^1.15.7",
     "tailwindcss": "^4.3.0",
     "vue": "^3.5.34",
     "vue-router": "^5.0.7"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^24.12.3",
     "@types/sortablejs": "^1.15.9",
     "@vitejs/plugin-vue": "^6.0.6",

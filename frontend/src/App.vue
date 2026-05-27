@@ -4,10 +4,14 @@ import { ref, watch, onMounted } from 'vue';
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
 import Sortable from 'sortablejs'
+import debounce from 'lodash.debounce'
+import { useRoute } from 'vue-router'
+
+import { getBoard, saveBoard } from './services/api.ts';
 
 import type { Task, CategoryData } from './types/task'
 
-const API_URL = import.meta.env.VITE_API_URL
+const route = useRoute()
 
 const tasks = ref<Task[]>(
   JSON.parse(
@@ -54,7 +58,7 @@ function toggleTask(taskToToggle: Task) {
 
 const editingTaskTitle = ref<string>('')
 
-function editTask(task: Task){
+function editTask(task: Task) {
   editingTaskTitle.value = task.title
 
   deleteTask(task)
@@ -136,9 +140,9 @@ function exportAll() {
 
   const rows = categories.value.map(category => {
     const filteredTasks = tasks.value
-    .filter(t => t.category === category.value)
-    .sort(function(a,b) {return a.order - b.order})
-    .map(t => t.title)
+      .filter(t => t.category === category.value)
+      .sort(function (a, b) { return a.order - b.order })
+      .map(t => t.title)
 
     return category.value + '\n\n' + filteredTasks.join('\n') + '\n\n'
   })
@@ -146,7 +150,7 @@ function exportAll() {
   let content = rows.join('\n')
 
   const blob = new Blob([content], {
-      type: 'text/plain',
+    type: 'text/plain',
   })
 
   const url = URL.createObjectURL(blob)
@@ -188,17 +192,29 @@ onMounted(() => {
   })
 })
 
-onMounted(async () => {
-  const response = await fetch(`${API_URL}/api/health`)
 
-  const data = await response.json()
+watch(
+  () => route.params.boardId,
+  async (boardId) => {
+    if (!boardId) return
 
-  console.log(data)
-})
+    const board = await getBoard(boardId as string)
+    
+    console.log(board)
+
+    localStorage.setItem(
+      'uuid',
+      JSON.stringify(boardId)
+    )
+
+    tasks.value = board.tasks
+    categories.value = board.categories
+  }
+)
 
 watch(
   tasks,
-  (newTasks) => {
+  async (newTasks) => {
     localStorage.setItem(
       'tasks',
       JSON.stringify(newTasks)
@@ -217,19 +233,58 @@ watch(
   },
   { deep: true }
 )
+
+const debouncedSave = debounce(async () => {
+    const uuid = localStorage.getItem('uuid')
+
+    if (!uuid) return
+
+    try {
+        await saveBoard(
+            uuid,
+            tasks.value,
+            categories.value
+        )
+
+        console.log('board saved')
+    } catch (error) {
+        console.error(error)
+    }
+}, 500)
+
+watch(
+    [tasks, categories],
+    () => {
+        localStorage.setItem(
+            'tasks',
+            JSON.stringify(tasks.value)
+        )
+
+        localStorage.setItem(
+            'categories',
+            JSON.stringify(categories.value)
+        )
+
+        debouncedSave()
+    },
+    {
+        deep: true,
+    }
+)
 </script>
 
 <template>
   <main class="min-h-screen p-8">
 
     <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
-      :categories="categories" :editing-task-title="editingTaskTitle"/>
-      <button class="my-4 p-2 bg-emerald-500 font-bold text-white rounded-xl cursor-pointer" @click="exportAll">Export All</button>
+      :categories="categories" :editing-task-title="editingTaskTitle" />
+    <button class="my-4 p-2 bg-emerald-500 font-bold text-white rounded-xl cursor-pointer" @click="exportAll">Export
+      All</button>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
       <TaskColumn v-for="category in categories" :key="category.value" :title="category.title"
         :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
-        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @edit-task="editTask"/>
-      </div>
+        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @edit-task="editTask" />
+    </div>
   </main>
 </template>
