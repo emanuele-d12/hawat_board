@@ -16,12 +16,11 @@ const routes: RouteRecordRaw[] = [
         component: EmptyComponent,
 
         beforeEnter: async () => {
-            const uuid = crypto.randomUUID()
 
             try {
-                await createBoard(uuid)
+                const board = await createBoard()
 
-                return `/${uuid}`
+                router.push(`/board/${board.uuid}`)
             } catch (error) {
                 console.error(error)
 
@@ -30,7 +29,7 @@ const routes: RouteRecordRaw[] = [
         },
     },
     {
-        path: '/:boardId',
+        path: '/board/:boardId',
         component: App,
     },
 ]

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
 import Sortable from 'sortablejs'
@@ -12,17 +12,10 @@ import { getBoard, saveBoard } from './services/api.ts';
 import type { Task, CategoryData } from './types/task'
 
 const route = useRoute()
+const isHydrating = ref(false)
 
-const tasks = ref<Task[]>(
-  JSON.parse(
-    localStorage.getItem('tasks') || '[]'
-  )
-)
-
-const categories = ref<CategoryData[]>(
-  JSON.parse(
-    localStorage.getItem('categories') || 'null'
-  ) || [])
+const tasks = ref<Task[]>([])
+const categories = ref<CategoryData[]>([])
 
 const categoriesContainer = ref<HTMLElement | null>(null)
 
@@ -196,80 +189,78 @@ onMounted(() => {
 watch(
   () => route.params.boardId,
   async (boardId) => {
+
     if (!boardId) return
 
-    const board = await getBoard(boardId as string)
-    
-    console.log(board)
+    // blocco save/watch
+    isHydrating.value = true
 
-    localStorage.setItem(
-      'uuid',
-      JSON.stringify(boardId)
-    )
+    try {
 
-    tasks.value = board.tasks
-    categories.value = board.categories
+      const board = await getBoard(boardId as string)
+
+      // hydrate stato
+      tasks.value = board.tasks
+      categories.value = board.categories
+
+      // aspetta update reactive Vue
+      await nextTick()
+
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      isHydrating.value = false
+    }
+  },
+  {
+    immediate: true,
   }
 )
 
-watch(
-  tasks,
-  async (newTasks) => {
-    localStorage.setItem(
-      'tasks',
-      JSON.stringify(newTasks)
-    )
-  },
-  { deep: true }
-)
-
-watch(
-  categories,
-  (newCategories) => {
-    localStorage.setItem(
-      'categories',
-      JSON.stringify(newCategories)
-    )
-  },
-  { deep: true }
-)
 
 const debouncedSave = debounce(async () => {
-    const uuid = localStorage.getItem('uuid')
+  const uuid = route.params.boardId as string
+  
+  if (!uuid) return
+  try {
+    await saveBoard(
+      uuid,
+      tasks.value,
+      categories.value
+    )
 
-    if (!uuid) return
-
-    try {
-        await saveBoard(
-            uuid,
-            tasks.value,
-            categories.value
-        )
-
-        console.log('board saved')
-    } catch (error) {
-        console.error(error)
-    }
+    console.log('board saved')
+  } catch (error) {
+    console.error(error)
+  }
 }, 500)
 
 watch(
-    [tasks, categories],
-    () => {
-        localStorage.setItem(
-            'tasks',
-            JSON.stringify(tasks.value)
-        )
+   [
+    () => tasks.value,
+    () => categories.value,
+  ],
+  () => {
 
-        localStorage.setItem(
-            'categories',
-            JSON.stringify(categories.value)
-        )
+    if (isHydrating.value) return
+    console.log('tasks o categorie modificate, posso caricare')
 
-        debouncedSave()
-    },
-    {
-        deep: true,
-    }
+    localStorage.setItem(
+      'tasks',
+      JSON.stringify(tasks.value)
+    )
+
+    localStorage.setItem(
+      'categories',
+      JSON.stringify(categories.value)
+    )
+
+    debouncedSave()
+  },
+  {
+    deep: true,
+  }
 )
 </script>
 

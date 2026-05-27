@@ -1,8 +1,12 @@
 import express from 'express'
 import cors from 'cors'
+import crypto from 'crypto'
 
 import fs from 'fs/promises'
 import path from 'path'
+
+const uuidRegex =
+/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 const app = express()
 const DATA_DIR = path.join(process.cwd(), 'data/json')
@@ -17,57 +21,33 @@ app.listen(PORT, () => {
 })
 
 
-app.get('/api/health', (_, res) => {
-    res.json({
-        status: 'ok',
-    })
-})
 
-
-app.post('/api/link', async (req, res) => {
+app.post('/api/boards', async (req, res) => {
     try {
-        console.log('receiving uuid', req.body)
 
-        const { uuid } = req.body
-
-        if (!uuid) {
-            return res.status(400).json({
-                error: 'uuid missing',
-            })
-        }
+        const uuid = crypto.randomUUID()
 
         await fs.mkdir(DATA_DIR, {
             recursive: true,
         })
 
-        const filePath = path.join(DATA_DIR, `${uuid}.json`)
 
-        try {
-            await fs.access(filePath)
-            console.log('file found!')
+        console.log('creating a new board with id: ', uuid)
 
-            const existingFile = await fs.readFile(filePath, 'utf-8')
-            return res.json(JSON.parse(existingFile))
-
-        } catch {
-            console.log('File not found...creating a new JSON!')
-
-            const newBoard = {
-                uuid,
-                categories: [],
-                tasks: []
-            }
-
-            console.log('File path: ', filePath)
-
-            await fs.writeFile(
-                filePath,
-                JSON.stringify(newBoard, null, 2)
-            )
-
-            return res.json(newBoard)
-
+        const newBoard = {
+            uuid,
+            categories: [],
+            tasks: [],
+            createdAt: Date.now()
         }
+
+        await fs.writeFile(
+            path.join(DATA_DIR, `${uuid}.json`),
+            JSON.stringify(newBoard, null, 2)
+        )
+
+        return res.json(newBoard)
+
 
     } catch {
         return res.status(500).json({
@@ -78,8 +58,14 @@ app.post('/api/link', async (req, res) => {
 })
 
 app.put('/api/boards/:uuid', async (req, res) => {
-    
-    const { uuid } = req.body
+
+    const { uuid } = req.params
+
+    if (!uuidRegex.test(uuid)) {
+        res.status(401).json({
+            error: 'Not valid uuid :('
+        })
+    }
     const filePath = path.join(
         DATA_DIR,
         `${uuid}.json`
@@ -91,7 +77,11 @@ app.put('/api/boards/:uuid', async (req, res) => {
         categories: req.body.categories,
     }
 
-    await fs.writeFile(
+    console.log('board to overwrite: ', filePath)
+    console.log('new data: ', board)
+
+    try {
+        await fs.writeFile(
             filePath,
             JSON.stringify(
                 board,
@@ -100,10 +90,14 @@ app.put('/api/boards/:uuid', async (req, res) => {
             )
         )
 
+        res.json({ status: 'ok' })
+    } catch (error) {
+        res.status(500).json({
+            error: 'Save Failed :('
+        })
+    }
 
-    res.json({
-        status: 'ok'
-    })
+
 
 })
 

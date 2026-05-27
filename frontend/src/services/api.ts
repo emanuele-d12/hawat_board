@@ -1,30 +1,53 @@
-import { categories } from "../types/categories"
-import type { Category, Task } from "../types/task"
+import type { CategoryData, Task } from "../types/task"
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export async function createBoard(uuid: string) {
-    return fetch(`${API_URL}/api/link`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            uuid,
-        }),
-    })
+export interface Board {
+    uuid: string
+    tasks: Task[]
+    categories: CategoryData[]
 }
 
-export async function getBoard(uuid: string) {
-    const response = await fetch(
-        `${API_URL}/api/boards/${uuid}`
-    )
+async function handleResponse(
+    response: Response
+) {
+
+    if (!response.ok) {
+
+        const error =
+            await response.json()
+
+        throw new Error(
+            error.error ||
+            'api error'
+        )
+    }
 
     return response.json()
 }
 
+export async function createBoard() {
+    const response = await fetch(`${API_URL}/api/boards`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+
+    return handleResponse(response)
+}
+
+export async function getBoard(uuid: string): Promise<Board> {
+    const response = await fetch(
+        `${API_URL}/api/boards/${uuid}`
+    )
+
+    return handleResponse(response)
+}
+
 
 export async function saveBoard(uuid: string, tasks: Task[], categories: CategoryData[]) {
+  console.log('api function saveBoard triggered')
     const response = await fetch(`${API_URL}/api/boards/${uuid}`, {
         method: 'PUT',
         headers: {
@@ -36,11 +59,5 @@ export async function saveBoard(uuid: string, tasks: Task[], categories: Categor
         })
     })
 
-    if (!response.ok) {
-        throw new Error(
-            `saveBoard failed: ${response.status}`
-        )
-    }
-
-    return response.json()
+    return handleResponse(response)
 }
