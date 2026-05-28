@@ -1,5 +1,6 @@
 export const defaultPalette = {
   background: 'bg-gradient-to-r from-orange-50 via-amber-100 to-orange-200',
+  card_header: 'bg-amber-200 border-amber-400',
   card_background: 'bg-amber-100 border-amber-300',
   label: 'bg-amber-300 border-amber-600',
   task_label: 'bg-amber-200 border-amber-600',

@@ -87,7 +87,7 @@ onMounted(() => {
 <template>
     <div class="rounded-3xl border shadow-sm" :class="defaultPalette.card_background">
         <!-- HEADER -->
-        <div class="flex items-center justify-between p-5 border-b border-gray-100">
+        <div class="flex items-center justify-between p-5 border-b rounded-t-3xl" :class="defaultPalette.card_header">
             <h2 class="text-lg font-semibold text-gray-800">
                 {{ title }}
             </h2>
