@@ -67,7 +67,7 @@ watch(
 
         <div class="flex flex-col gap-4">
             <input ref="taskInput" v-model="taskTitle" type="text" placeholder="Inserisci un task..." @keydown.enter="addTask" 
-                class="w-full rounded-2xl border mb-5 px-4 py-3 outline-none focus:ring-2 focus:border-transparent transition" :class="defaultPalette.text_input">
+                class="w-full rounded-2xl border mb-5 px-4 py-3 outline-none transition" :class="defaultPalette.text_input">
 
 
         </div>
@@ -81,7 +81,7 @@ watch(
                 class="flex w-full overflow-hidden rounded-2xl border transition" 
                 :class="selectedCategory === category.value
                     ? defaultPalette.label
-                    : 'border-gray-300 '
+                    : defaultPalette.button_inactive
                 "
             >
               <!-- SELECT CATEGORY -->
@@ -120,22 +120,22 @@ watch(
     </div>
 
     <div v-if="isCategoryModalOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-md">
+        <div class="rounded-3xl p-6 w-full max-w-md" :class="defaultPalette.card_background">
 
             <h2 class="text-2xl font-bold mb-4">
                 Nuova Categoria
             </h2>
 
             <input v-model="newCategoryTitle" type="text" placeholder="Nome categoria..."
-                class="w-full border border-gray-300 rounded-2xl px-4 py-3 mb-4">
+                class="w-full border rounded-2xl px-4 py-3 mb-4 focus:ring-blue-500 outline-none" :class="defaultPalette.text_input">
 
             <div class="flex gap-3">
 
-                <button @click="isCategoryModalOpen = false" class="flex-1 py-3 rounded-2xl border">
+                <button @click="isCategoryModalOpen = false" class="flex-1 py-3 rounded-2xl border" :class="defaultPalette.button_inactive">
                     Annulla
                 </button>
 
-                <button @click="addCategory" class="flex-1 py-3 rounded-2xl bg-blue-500 text-white">
+                <button @click="addCategory" class="flex-1 py-3 rounded-2xl" :class="defaultPalette.button_primary">
                     Aggiungi
                 </button>
 
