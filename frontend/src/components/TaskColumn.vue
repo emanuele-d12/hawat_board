@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import Sortable from 'sortablejs'
 
 import type { Task, Category } from '../types/task'
+import { defaultPalette } from '../constants/theme';
 
 const props = defineProps<{
     title: string
@@ -84,7 +85,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm">
+    <div class="rounded-3xl border shadow-sm" :class="defaultPalette.card_background">
         <!-- HEADER -->
         <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="text-lg font-semibold text-gray-800">
@@ -92,7 +93,7 @@ onMounted(() => {
             </h2>
             <div class="flex gap-3">
 
-                <span class="text-sm bg-gray-100 px-3 py-1 rounded-full">
+                <span class="text-sm px-3 py-1 rounded-full" :class="defaultPalette.background">
                     {{ tasks.length }}
                 </span>
                 
@@ -106,13 +107,14 @@ onMounted(() => {
 
         <div ref="taskContainer" class="p-5 space-y-3 min-h-[400px]">
             <div v-for="(task, index) in tasks" :key="task.id" :data-task-id="task.id"
-                class="p-3 rounded-2xl border bg-gray-50 hover:bg-white transition" :class="task.completed
-                    ? 'border-green-300 bg-green-50'
-                    : 'border-gray-200'" @dblclick="emit('edit-task', task)">
+                class="p-3 rounded-2xl border transition" :class="task.completed
+                    ? defaultPalette.completed_task_label
+                    : defaultPalette.task_label"
+                    @dblclick="emit('edit-task', task)">
                 <div class="flex items-center justify-between gap-3">
 
                     <span class="font-medium" :class="task.completed
-                        ? 'line-through text-gray-400'
+                        ? 'line-through'
                         : 'text-gray-800'">
                         {{ task.title }}
                     </span>
@@ -120,12 +122,14 @@ onMounted(() => {
                     <div class="flex gap-2">
 
                         <button @click="emit('toggle-task', task)"
-                            class="w-8 h-8 rounded-lg bg-green-500 text-white hover:scale-105 transition">
+                            class="w-8 h-8 rounded-lg transition"
+                            :class="defaultPalette.check_button">
                             ✓
                         </button>
 
                         <button @click="emit('delete-task', task)"
-                            class="w-8 h-8 rounded-lg bg-red-500 text-white hover:scale-105 transition">
+                            class="w-8 h-8 rounded-lg transition"
+                            :class="defaultPalette.close_button">
                             ×
                         </button>
 

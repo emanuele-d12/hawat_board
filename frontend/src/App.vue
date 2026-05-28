@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 import Sortable from 'sortablejs'
 import debounce from 'lodash.debounce'
 
+import { defaultPalette } from './constants/theme.ts'
 import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
 
@@ -18,6 +19,7 @@ const tasks = ref<Task[]>([])
 const categories = ref<CategoryData[]>([])
 
 const categoriesContainer = ref<HTMLElement | null>(null)
+
 
 function handleAddTask(task: Task) {
   console.log('adding task: ', task)
@@ -269,11 +271,11 @@ watch(
 </script>
 
 <template>
-  <main class="min-h-screen p-8">
+  <main class="min-h-screen p-8" :class="defaultPalette.background">
 
     <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
       :categories="categories" :editing-task-title="editingTaskTitle" />
-    <button class="my-4 p-2 bg-emerald-500 font-bold text-white rounded-xl cursor-pointer" @click="exportAll">Export
+    <button class="my-4 p-2 font-bold text-white rounded-xl cursor-pointer" :class="defaultPalette.button_primary" @click="exportAll">Export
       All</button>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">

@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 
 import type { TaskPayload, Category, CategoryData } from '../types/task'
+import { defaultPalette } from '../constants/theme';
 
 const taskTitle = ref<string>('')
 const selectedCategory = ref<Category>('backlog')
@@ -59,14 +60,14 @@ watch(
 </script>
 
 <template>
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-5 md:p-6 max-w-4xl mx-auto">
+    <div class="rounded-3xl shadow-sm border p-5 md:p-6 max-w-4xl mx-auto" :class="defaultPalette.card_background">
         <h2 class="text-2xl font-bold mb-5 text-gray-800">
             Nuova Task
         </h2>
 
         <div class="flex flex-col gap-4">
             <input ref="taskInput" v-model="taskTitle" type="text" placeholder="Inserisci un task..." @keydown.enter="addTask" 
-                class="w-full rounded-2xl border border-gray-300 mb-5 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+                class="w-full rounded-2xl border mb-5 px-4 py-3 outline-none focus:ring-2 focus:border-transparent transition" :class="defaultPalette.text_input">
 
 
         </div>
@@ -79,7 +80,7 @@ watch(
                 :key="category.value" 
                 class="flex w-full overflow-hidden rounded-2xl border transition" 
                 :class="selectedCategory === category.value
-                    ? 'border-blue-500'
+                    ? defaultPalette.label
                     : 'border-gray-300 '
                 "
             >
@@ -89,8 +90,8 @@ watch(
                     class="flex-1 px-4 py-2 font-medium transition"
                     :class="
                         selectedCategory === category.value
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                        ? defaultPalette.button_secondary
+                        : defaultPalette.button_inactive
                     "
                     
                 >
@@ -99,7 +100,8 @@ watch(
                  <!-- DELETE CATEGORY -->
                   <button
                     @click="emit('delete-category', category.value)"
-                    class="px-2 bg-red-400 text-white border-l border-gray-300 hover:bg-red-600 transition"
+                    class="px-2 font-bold transition"
+                    :class="defaultPalette.close_button"
                   >
                     X
                   </button>
@@ -112,7 +114,7 @@ watch(
             </button>
         </div>
         <button @click="addTask"
-            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold mt-6 px-6 py-3 rounded-2xl transition shadow-sm">
+            class="w-full text-white font-semibold mt-6 px-6 py-3 rounded-2xl transition shadow-sm" :class="defaultPalette.button_primary">
             Aggiungi Task
         </button>
     </div>
