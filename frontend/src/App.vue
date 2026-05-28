@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
 import { ref, watch, onMounted, nextTick } from 'vue';
-import NewTask from './components/NewTask.vue'
-import TaskColumn from './components/TaskColumn.vue'
+import { useRoute } from 'vue-router'
 import Sortable from 'sortablejs'
 import debounce from 'lodash.debounce'
-import { useRoute } from 'vue-router'
+
+import NewTask from './components/NewTask.vue'
+import TaskColumn from './components/TaskColumn.vue'
 
 import { getBoard, saveBoard } from './services/api.ts';
-
 import type { Task, CategoryData } from './types/task'
 
 const route = useRoute()
@@ -35,13 +35,13 @@ function handleAddCategory(title: string) {
 }
 
 function deleteCategory(categoryToDelete: string) {
-  console.log('deleting: ', categoryToDelete)
+  console.log('deleting category: ', categoryToDelete)
   categories.value = categories.value.filter(category => category.value !== categoryToDelete)
   tasks.value = tasks.value.filter(task => task.category !== categoryToDelete)
 }
 
 function deleteTask(taskToDelete: Task) {
-  console.log('deleting: ', taskToDelete)
+  console.log('deleting Task: ', taskToDelete)
   tasks.value = tasks.value.filter(task => task !== taskToDelete)
 }
 
@@ -53,7 +53,6 @@ const editingTaskTitle = ref<string>('')
 
 function editTask(task: Task) {
   editingTaskTitle.value = task.title
-
   deleteTask(task)
 }
 
@@ -74,11 +73,16 @@ function reorderTask(payload: {
     payload.category
   )
 
+  
   if (!categoryTasks.length) return
+  
+  console.log('categoryTasks', categoryTasks)
+  console.log('payload.oldIndex', payload.oldIndex)
 
   const movedTask =
-    categoryTasks.splice(payload.oldIndex, 1)[0]
-
+  categoryTasks.splice(payload.oldIndex - 1, 1)[0]
+  
+  console.log('moved task', movedTask)
   categoryTasks.splice(
     payload.newIndex,
     0,
