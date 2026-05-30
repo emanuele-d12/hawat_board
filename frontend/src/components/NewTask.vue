@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import crypto from 'crypto'
 
 import type { TaskPayload, Category, CategoryData } from '../types/task'
 import { defaultPalette } from '../constants/theme';
@@ -37,7 +36,7 @@ function addTask() {
     if (!taskTitle.value.trim()) return
 
     emit('add-task', {
-        id: crypto.randomUUID(),
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         title: taskTitle.value,
         category: selectedCategory.value,
         completed: false,
