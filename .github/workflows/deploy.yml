@@ -13,5 +13,9 @@ jobs:
       - name: Deploy hawat board
         run: |
           cd $HAWAT_BOARD_REPO_PATH
+
+          git fetch origin
+          git reset --hard origin/prod
+
           chmod +x scripts/deploy.sh
           ./scripts/deploy.sh
