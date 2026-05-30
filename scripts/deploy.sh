@@ -9,9 +9,6 @@ OLD_COMMIT=$(git rev-parse HEAD)
 git fetch origin
 git reset --hard origin/prod
 
-# cp frontend/.env.prod frontend/.env
-# cp backend/.env.prod  backend/.env
-
 NEW_COMMIT=$(git rev-parse HEAD)
 
 echo "OLD COMMIT: $OLD_COMMIT"
