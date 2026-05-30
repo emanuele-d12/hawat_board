@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import crypto from 'crypto'
 
 import type { TaskPayload, Category, CategoryData } from '../types/task'
 import { defaultPalette } from '../constants/theme';
