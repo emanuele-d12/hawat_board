@@ -9,7 +9,7 @@ import path from 'path'
 
 const app = express()
 const DATA_DIR = path.resolve(
-    process.env.DATA_DIR || './data/json'
+    process.env.DATA_DIR || './data/'
 )
 
 console.log('current datadir: ', DATA_DIR)
@@ -48,7 +48,7 @@ app.post('/api/boards', async (req, res) => {
         }
 
         await fs.writeFile(
-            path.join(DATA_DIR, `${uuid}.json`),
+            path.join(DATA_DIR, `/json/${uuid}.json`),
             JSON.stringify(newBoard, null, 2)
         )
 
@@ -75,7 +75,7 @@ app.put('/api/boards/:uuid', async (req, res) => {
     }
     const filePath = path.join(
         DATA_DIR,
-        `${uuid}.json`
+        `/json/${uuid}.json`
     )
 
     const board = {
@@ -126,7 +126,7 @@ app.get('/api/boards/:uuid', async (req, res) => {
 
     const filePath = path.join(
         DATA_DIR,
-        `${uuid}.json`
+        `/json/${uuid}.json`
     )
 
     try {
