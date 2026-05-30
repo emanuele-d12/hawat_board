@@ -111,7 +111,7 @@ onMounted(() => {
                     ? defaultPalette.completed_task_label
                     : defaultPalette.task_label"
                     @dblclick="emit('edit-task', task)">
-                <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center justify-between gap-3" :data-index="index">
 
                     <span class="font-medium" :class="task.completed
                         ? 'line-through'
