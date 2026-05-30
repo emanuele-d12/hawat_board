@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import crypto from 'crypto'
+import 'dotenv/config'
 
 import fs from 'fs/promises'
 import path from 'path'
@@ -10,6 +11,8 @@ const app = express()
 const DATA_DIR = path.resolve(
     process.env.DATA_DIR || './data/json'
 )
+
+console.log('current datadir: ', DATA_DIR)
 
 app.use(cors())
 app.use(express.json())
