@@ -12,10 +12,14 @@ jobs:
     steps:
       - name: Deploy hawat board
         run: |
-          cd $HAWAT_BOARD_REPO_PATH
+            echo "HAWAT_BOARD_REPO_PATH=$HAWAT_BOARD_REPO_PATH"
 
-          git fetch origin
-          git reset --hard origin/prod
-
-          chmod +x scripts/deploy.sh
-          ./scripts/deploy.sh
+            if [ -d "$HAWAT_BOARD_REPO_PATH" ]; then
+              echo "Directory exists"
+            else
+              echo "Directory DOES NOT exist"
+              exit 1
+            fi
+            cd $HAWAT_BOARD_REPO_PATH
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh
