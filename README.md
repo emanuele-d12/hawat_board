@@ -2,7 +2,7 @@
 
 A lightweight self-hosted Kanban board built with Vue 3, TypeScript and Vite.
 
-Designed to be simple, fast and extensible, with support for drag & drop task management, dynamic categories and Docker-based deployment.
+Designed to be simple, fast and extensible, with support for drag & drop task management, dynamic categories and self-hosted deployment.
 
 ---
 
@@ -11,42 +11,61 @@ Designed to be simple, fast and extensible, with support for drag & drop task ma
 - ✅ Dynamic task categories
 - ✅ Drag & drop task management
 - ✅ Cross-column task movement
-- ✅ Persistent local storage
 - ✅ Reorderable columns
+- ✅ Persistent task ordering
 - ✅ Plaintext export
 - ✅ Responsive UI
 - ✅ Docker support
 - ✅ Nginx production serving
-- 🚧 Backend synchronization (WIP)
-- 🚧 Shared boards (planned)
-- 🚧 Real-time collaboration (planned)
+- ✅ UUID-based boards
+- ✅ Board persistence via backend
+- ✅ Automatic debounced saving
+- ✅ URL-based board sharing
+- 🚧 Authentication
+- 🚧 Real-time collaboration
 
 ---
 
 ## Tech Stack
 
+### Frontend
+
 - Vue 3
 - TypeScript
 - Vite
+- Vue Router
 - Tailwind CSS
 - SortableJS
+- Lodash Debounce
+
+### Backend
+
+- Node.js
+- Express
+- TypeScript
+
+### Infrastructure
+
 - Docker
+- Docker Compose
 - Nginx
-- Express (backend WIP)
 
 ---
-
 
 ## Architecture
 
 ```txt
-Frontend (Vue 3 + TypeScript)
-        ↓
-Reactive State Management
-        ↓
-LocalStorage Persistence
-        ↓
-Future Express API Backend
+Browser
+    ↓
+Vue 3 Frontend
+    ↓
+Reactive State
+    ↓
+Auto Save (Debounced)
+    ↓
+Express API
+    ↓
+Board Storage
 ```
 
 ---
@@ -55,31 +74,95 @@ Future Express API Backend
 
 ```txt
 .
-├── src
-│   ├── components
-│   │   ├── ListTasks.vue
-│   │   ├── NewTask.vue
-│   │   └── TaskColumn.vue
-│   ├── router
-│   ├── types
-│   ├── assets
-│   ├── App.vue
-│   ├── main.ts
-│   └── style.css
-├── public
-├── local
-├── Dockerfile
-├── Dockerfile.dev
-├── nginx.conf
-├── package.json
-└── vite.config.ts
+├── backend
+│   ├── data
+│   ├── src
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend
+│   ├── public
+│   ├── src
+│   │   ├── components
+│   │   ├── router
+│   │   ├── services
+│   │   ├── types
+│   │   └── App.vue
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── docker-compose.yml
+├── docker-compose.prod.yml
+└── README.md
 ```
 
 ---
 
-## Core Concepts
+## Board Lifecycle
 
-### Dynamic Categories
+### Create Board
+
+Accessing:
+
+```txt
+/
+```
+
+creates a new board through the backend.
+
+A UUID is generated and the user is redirected to:
+
+```txt
+/board/<uuid>
+```
+
+Example:
+
+```txt
+/board/e080cdc5-5cd6-4617-aa43-d0f633a47074
+```
+
+---
+
+### Load Board
+
+When a board URL is opened:
+
+```txt
+/board/:boardId
+```
+
+the frontend retrieves:
+
+- tasks
+- categories
+
+from the backend API.
+
+Hydration safeguards prevent accidental save operations while loading board state.
+
+---
+
+### Save Board
+
+Board changes are automatically saved.
+
+Triggered by:
+
+- task creation
+- task deletion
+- task editing
+- task movement
+- task reorder
+- category creation
+- category deletion
+- category reorder
+
+Saving is debounced to reduce API traffic and unnecessary writes.
+
+---
+
+## Dynamic Categories
 
 Categories are fully dynamic and can be:
 
@@ -88,15 +171,15 @@ Categories are fully dynamic and can be:
 - removed
 - used as drag & drop containers
 
-Unlike traditional todo apps, columns are not hardcoded.
+Columns are not hardcoded.
 
 ---
 
-### Drag & Drop System
+## Drag & Drop System
 
 Tasks can be:
 
-- reordered inside the same column
+- reordered within the same category
 - moved across categories
 - persisted automatically
 
@@ -104,26 +187,45 @@ Powered by SortableJS.
 
 ---
 
-### Persistent Ordering
+## Persistent Ordering
 
-Each task contains an internal order index:
+Each task contains an internal order value:
 
 ```ts
 task.order
 ```
 
-This guarantees stable rendering and persistent ordering across reloads.
+This guarantees stable rendering and deterministic ordering across reloads and backend synchronization.
 
 ---
 
-### Export System
+## Export System
 
-The board supports plaintext export for:
+Boards can be exported as plaintext.
 
-- single categories
-- entire boards
+Example:
 
-Useful for notes, backups or external sharing.
+```txt
+todo
+
+Fix API
+Deploy Raspberry
+
+doing
+
+Write documentation
+
+done
+
+Initial setup
+```
+
+Useful for:
+
+- backups
+- documentation
+- external sharing
+- migration
 
 ---
 
@@ -131,55 +233,55 @@ Useful for notes, backups or external sharing.
 
 ### Install dependencies
 
+Frontend:
+
 ```bash
+cd frontend
 npm install
 ```
 
-### Start development server
+Backend:
+
+```bash
+cd backend
+npm install
+```
+
+### Start development servers
+
+Frontend:
 
 ```bash
 npm run dev
 ```
 
-Application will be available at:
+Backend:
 
-```txt
-http://localhost:5173
+```bash
+npm run dev
 ```
 
 ---
 
 ## Production Build
 
+Frontend:
+
 ```bash
+cd frontend
+npm run build
+```
+
+Backend:
+
+```bash
+cd backend
 npm run build
 ```
 
 ---
 
 ## Docker
-
-### Build image
-
-```bash
-docker build -t hawat_board .
-```
-
-### Run container
-
-```bash
-docker run -p 8080:80 hawat_board
-```
-
-Application will be available at:
-
-```txt
-http://localhost:8080
-```
-
----
-
-## Docker Compose
 
 ### Development
 
@@ -193,18 +295,6 @@ docker compose up
 docker compose -f docker-compose.prod.yml up -d
 ```
 
----
-
-## Backend (Work In Progress)
-
-A backend service based on Express is currently being prepared for:
-
-- board persistence
-- shared boards
-- synchronization
-- multi-user support
-
-Current architecture already anticipates backend integration.
 
 ---
 
@@ -212,23 +302,24 @@ Current architecture already anticipates backend integration.
 
 ### Short Term
 
-- [ ] Backend persistence
-- [ ] Better mobile UX
+- [ ] Improved mobile UX
 - [ ] Dark mode
-- [ ] Improved export formatting
+- [ ] Better export formatting
 
 ### Mid Term
 
-- [ ] Multi-board support
-- [ ] URL-based boards
-- [ ] Shared workspaces
 - [ ] Authentication
+- [ ] Multi-board dashboard
+- [ ] Board duplication
+- [ ] Shared workspaces
+- [ ] Backup management
 
 ### Long Term
 
 - [ ] Real-time collaboration
-- [ ] WebSocket sync
+- [ ] WebSocket synchronization
 - [ ] User permissions
+- [ ] Activity history
 - [ ] Offline-first support
 
 ---
@@ -236,5 +327,3 @@ Current architecture already anticipates backend integration.
 ## License
 
 MIT
-
-```
