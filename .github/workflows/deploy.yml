@@ -1,0 +1,16 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy hawat board
+        run: |
+          chmod +x scripts/deploy.sh
+          ./scripts/deploy.sh
