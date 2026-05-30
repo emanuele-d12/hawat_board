@@ -7,7 +7,9 @@ import path from 'path'
 
 
 const app = express()
-const DATA_DIR = path.join(process.cwd(), 'data/json')
+const DATA_DIR = path.resolve(
+    process.env.DATA_DIR || './data/json'
+)
 
 app.use(cors())
 app.use(express.json())
