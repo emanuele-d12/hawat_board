@@ -305,6 +305,7 @@ docker compose -f docker-compose.prod.yml up -d
 - [ ] Improved mobile UX
 - [ ] Dark mode
 - [ ] Better export formatting
+- [ ] Adding CI/CD
 
 ### Mid Term
 
