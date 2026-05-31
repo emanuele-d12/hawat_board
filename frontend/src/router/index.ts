@@ -1,6 +1,6 @@
 import {
     createRouter,
-    createWebHistory,
+    createWebHashHistory,
     type RouteRecordRaw,
 } from "vue-router"
 import App from '../App.vue'
@@ -36,7 +36,7 @@ const routes: RouteRecordRaw[] = [
 
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes,
 })
 
