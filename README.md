@@ -298,6 +298,131 @@ docker compose -f docker-compose.prod.yml up -d
 
 ---
 
+---
+
+## Deployment
+
+The project is designed to be deployment-agnostic.
+
+You can:
+
+- run it locally during development
+- deploy it with Docker
+- deploy it directly on a Linux server
+- host it behind a reverse proxy
+- self-host it on low-power devices such as Raspberry Pi
+
+The application does not depend on any specific hosting provider or cloud platform.
+
+### Frontend
+
+The frontend is built using Vite:
+
+```bash
+cd frontend
+
+npm ci
+npm run build
+```
+
+The generated files can then be served by any static web server such as:
+
+- Nginx
+- Apache
+- Caddy
+- Traefik
+
+### Backend
+
+The backend is a standalone Node.js application:
+
+```bash
+cd backend
+
+npm ci
+npm run build
+npm start
+```
+
+For production environments it is recommended to run the backend through a process manager such as:
+
+- PM2
+- systemd
+- Docker
+
+### Reverse Proxy
+
+A typical production setup consists of:
+
+```txt
+Browser
+    ↓
+Reverse Proxy (Nginx/Caddy/etc.)
+    ↓
+Frontend (static files)
+    ↓
+Backend API
+```
+
+The frontend communicates with the backend through `/api/*` endpoints, allowing the backend to remain private and accessible only through the reverse proxy.
+
+---
+
+## Automated Deployment
+
+The repository can be connected to a CI/CD pipeline to automatically deploy new versions whenever changes are pushed to a production branch.
+
+A common workflow is:
+
+```txt
+Push to production branch
+        ↓
+CI/CD pipeline
+        ↓
+Pull latest code
+        ↓
+Install dependencies
+        ↓
+Build frontend
+        ↓
+Build backend
+        ↓
+Restart application
+```
+
+Since the deployment logic is contained inside the repository, the project can be cloned and deployed on any compatible machine without depending on a specific infrastructure.
+
+---
+
+## Configuration
+
+Runtime configuration is handled through environment variables.
+
+Example:
+
+```env
+DATA_DIR=./data/json
+```
+
+The backend will automatically create and use the configured storage directory.
+
+---
+
+## Self Hosting
+
+Hawat Board is intended to be fully self-hosted.
+
+A deployment only requires:
+
+- Node.js
+- A web server capable of serving static files
+- Optional reverse proxy
+- Optional process manager
+
+No external services are required.
+
+---
+
 ## Roadmap
 
 ### Short Term
@@ -305,7 +430,6 @@ docker compose -f docker-compose.prod.yml up -d
 - [ ] Improved mobile UX
 - [ ] Dark mode
 - [ ] Better export formatting
-- [ ] Adding CI/CD
 
 ### Mid Term
 
