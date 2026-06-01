@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, nextTick, onMounted } from 'vue';
 
 import type { TaskPayload, Category, CategoryData } from '../types/task'
 import { defaultPalette } from '../constants/theme';
 
 const taskTitle = ref<string>('')
-const selectedCategory = ref<Category>('backlog')
 const taskInput = ref<HTMLInputElement | null>(null)
+const categoryInput = ref<HTMLInputElement | null>(null)
+const selectedCategory = ref<Category>('')
+
 
 const props = defineProps<{
     categories: CategoryData[]
@@ -27,6 +29,7 @@ function addCategory() {
 
     emit('add-category', newCategoryTitle.value)
 
+    selectedCategory.value = newCategoryTitle.value
     newCategoryTitle.value = ''
     isCategoryModalOpen.value = false
 }
@@ -48,12 +51,29 @@ function addTask() {
     taskInput.value?.focus()
 }
 
+onMounted(() => {
+    taskInput.value?.focus()
+})
+
 watch(
   () => props.editingTaskTitle,
   (newValue) => {
     taskTitle.value = newValue
 
     taskInput.value?.focus()
+  }
+)
+
+watch(
+  () => isCategoryModalOpen.value,
+  (isOpen) => {
+    nextTick(() => {
+      if (isOpen) {
+        categoryInput.value?.focus()
+      } else {
+        taskInput.value?.focus()
+      }
+    })
   }
 )
 
@@ -126,7 +146,7 @@ watch(
                 Nuova Categoria
             </h2>
 
-            <input v-model="newCategoryTitle" type="text" placeholder="Nome categoria..."
+            <input ref="categoryInput" v-model="newCategoryTitle" type="text" placeholder="Nome categoria..." @keydown.enter="addCategory"
                 class="w-full border rounded-2xl px-4 py-3 mb-4 focus:ring-blue-500 outline-none" :class="defaultPalette.text_input">
 
             <div class="flex gap-3">
