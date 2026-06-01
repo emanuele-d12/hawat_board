@@ -250,17 +250,6 @@ watch(
   () => {
 
     if (isHydrating.value) return
-    console.log('tasks o categorie modificate, posso caricare')
-
-    localStorage.setItem(
-      'tasks',
-      JSON.stringify(tasks.value)
-    )
-
-    localStorage.setItem(
-      'categories',
-      JSON.stringify(categories.value)
-    )
 
     debouncedSave()
   },
