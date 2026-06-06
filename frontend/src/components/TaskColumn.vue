@@ -154,7 +154,7 @@ onMounted(() => {
                     : defaultPalette.task_label">
                 <div class="flex items-center justify-between gap-3" :data-index="index" @dblclick="startEdit(task)">
 
-                    <span v-if="editingTaskId !== task.id" class="font-medium"
+                    <span v-if="editingTaskId !== task.id" class="flex-1 min-w-0 break-words font-medium"
                         :class="task.completed ? 'line-through' : 'text-gray-800'">
                         {{ task.title }}
                     </span>

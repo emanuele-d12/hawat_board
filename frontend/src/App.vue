@@ -278,8 +278,8 @@ watch(
     <button class="my-4 p-2 font-bold text-white rounded-xl cursor-pointer" :class="defaultPalette.button_primary" @click="exportAll">Export
       All</button>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
-      <TaskColumn v-for="category in categories" :key="category.value" :title="category.title"
+    <div class="flex gap-5 mt-5 overflow-x-auto md:grid md:grid-cols-2 xl:grid-cols-3" ref="categoriesContainer">
+      <TaskColumn class="shrink-0 w-[80vw] md:w-auto" v-for="category in categories" :key="category.value" :title="category.title"
         :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
         @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @update-task="updateTask" />
     </div>
