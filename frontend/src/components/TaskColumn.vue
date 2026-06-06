@@ -90,6 +90,9 @@ onMounted(() => {
     if (!taskContainer.value) return
 
     Sortable.create(taskContainer.value, {
+        delay: 200,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 5,
         animation: 150,
         group: 'tasks',
         onAdd(event) {
