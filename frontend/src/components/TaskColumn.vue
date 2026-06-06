@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import Sortable from 'sortablejs'
 
 import type { Task, Category } from '../types/task'
@@ -12,7 +12,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'edit-task', task: Task): void
     (e: 'delete-task', task: Task): void
     (e: 'toggle-task', task: Task): void
     (e: 'reorder-task', payload: {
@@ -25,9 +24,48 @@ const emit = defineEmits<{
         newIndex: number
         newCategory: string
     }): void
+    (e: 'update-task', payload: {
+        taskId: string
+        title: string
+    }): void
 }>()
 
 const taskContainer = ref<HTMLElement | null>(null)
+const editingTaskId = ref<string | null>(null)
+const editingTitle = ref('')
+const editInput = ref<HTMLInputElement | null>(null)
+
+function setEditInput(el: any) {
+    editInput.value = el as HTMLInputElement | null
+}
+
+async function startEdit(task: Task) {
+    editingTaskId.value = task.id
+    editingTitle.value = task.title
+
+    await nextTick()
+
+    editInput.value?.focus()
+}
+
+function saveEdit(task: Task) {
+    const title = editingTitle.value.trim()
+
+    if (!title || editingTitle.value === task.title.trim()) {
+        editingTaskId.value = null
+        editingTitle.value = ''
+        return
+    }
+
+
+    emit('update-task', {
+        taskId: task.id,
+        title
+    })
+
+    editingTaskId.value = null
+    editingTitle.value = ''
+}
 
 function exportTasks() {
     const content = props.tasks
@@ -96,8 +134,9 @@ onMounted(() => {
                 <span class="text-sm px-3 py-1 rounded-full" :class="defaultPalette.background">
                     {{ tasks.length }}
                 </span>
-                
-                <button @click="exportTasks" class="text-xs px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-100">
+
+                <button @click="exportTasks"
+                    class="text-xs px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-100">
                     export
                 </button>
             </div>
@@ -109,26 +148,30 @@ onMounted(() => {
             <div v-for="(task, index) in tasks" :key="task.id" :data-task-id="task.id"
                 class="p-3 rounded-2xl border transition" :class="task.completed
                     ? defaultPalette.completed_task_label
-                    : defaultPalette.task_label"
-                    @dblclick="emit('edit-task', task)">
-                <div class="flex items-center justify-between gap-3" :data-index="index">
+                    : defaultPalette.task_label">
+                <div class="flex items-center justify-between gap-3" :data-index="index" @dblclick="startEdit(task)">
 
-                    <span class="font-medium" :class="task.completed
-                        ? 'line-through'
-                        : 'text-gray-800'">
+                    <span v-if="editingTaskId !== task.id" class="font-medium"
+                        :class="task.completed ? 'line-through' : 'text-gray-800'">
                         {{ task.title }}
                     </span>
 
+                    <input v-else :ref="setEditInput" v-model="editingTitle" @keyup.enter="saveEdit(task)"
+                        @blur="saveEdit(task)" @keyup.esc="editingTaskId = null"
+                        class="w-full rounded-2xl p-4 outline-none transition bg-amber-100" />
+
                     <div class="flex gap-2">
 
-                        <button @click="emit('toggle-task', task)"
-                            class="w-8 h-8 rounded-lg transition"
+                        <button @click="startEdit(task)" class="w-8 h-8 rounded-lg transition"
+                            :class="defaultPalette.check_button">
+                            ✎
+                        </button>
+                        <button @click="emit('toggle-task', task)" class="w-8 h-8 rounded-lg transition"
                             :class="defaultPalette.check_button">
                             ✓
                         </button>
 
-                        <button @click="emit('delete-task', task)"
-                            class="w-8 h-8 rounded-lg transition"
+                        <button @click="emit('delete-task', task)" class="w-8 h-8 rounded-lg transition"
                             :class="defaultPalette.close_button">
                             ×
                         </button>

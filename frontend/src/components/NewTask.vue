@@ -12,7 +12,6 @@ const selectedCategory = ref<Category>('')
 
 const props = defineProps<{
     categories: CategoryData[]
-    editingTaskTitle:string
 }>()
 
 const emit = defineEmits<{
@@ -55,14 +54,6 @@ onMounted(() => {
     taskInput.value?.focus()
 })
 
-watch(
-  () => props.editingTaskTitle,
-  (newValue) => {
-    taskTitle.value = newValue
-
-    taskInput.value?.focus()
-  }
-)
 
 watch(
   () => isCategoryModalOpen.value,

@@ -51,12 +51,6 @@ function toggleTask(taskToToggle: Task) {
   taskToToggle.completed = !taskToToggle.completed
 }
 
-const editingTaskTitle = ref<string>('')
-
-function editTask(task: Task) {
-  editingTaskTitle.value = task.title
-  deleteTask(task)
-}
 
 function getTasksByCategory(categoryValue: string) {
   return tasks.value
@@ -133,6 +127,20 @@ function moveTask(payload: {
     task.order = index
   })
 
+}
+
+function updateTask(payload: {
+  taskId: string
+  title: string
+}){
+
+  let taskToEdit = tasks.value.find(task => task.id === payload.taskId)
+
+  if(taskToEdit){
+    taskToEdit.title = payload.title
+  } else {
+    return
+  }
 }
 
 function exportAll() {
@@ -263,14 +271,14 @@ watch(
   <main class="min-h-screen p-8" :class="defaultPalette.background">
 
     <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
-      :categories="categories" :editing-task-title="editingTaskTitle" />
+      :categories="categories" />
     <button class="my-4 p-2 font-bold text-white rounded-xl cursor-pointer" :class="defaultPalette.button_primary" @click="exportAll">Export
       All</button>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5" ref="categoriesContainer">
       <TaskColumn v-for="category in categories" :key="category.value" :title="category.title"
         :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
-        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @edit-task="editTask" />
+        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @update-task="updateTask" />
     </div>
   </main>
 </template>
