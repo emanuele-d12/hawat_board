@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import Sortable from 'sortablejs'
 
 import type { Task, Category } from '../types/task'
@@ -90,10 +90,6 @@ onMounted(() => {
     if (!taskContainer.value) return
 
     Sortable.create(taskContainer.value, {
-        delay: 200,
-        delayOnTouchOnly: true,
-        touchStartThreshold: 5,
-        animation: 150,
         group: 'tasks',
         onAdd(event) {
             const taskId =

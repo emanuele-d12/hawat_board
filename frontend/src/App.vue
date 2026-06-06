@@ -174,6 +174,9 @@ onMounted(() => {
 
   Sortable.create(categoriesContainer.value, {
     animation: 200,
+    delay: 200,
+    touchStartThreshold: 5,
+    delayOnTouchOnly: true,
 
     onEnd(event) {
       if (
