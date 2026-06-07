@@ -10,84 +10,45 @@ import NewTask from './components/NewTask.vue'
 import TaskColumn from './components/TaskColumn.vue'
 
 import { getBoard, saveBoard } from './services/api.ts';
-import type { Task, CategoryData } from './types/task'
+import type { Task } from './types/task'
+import { Board } from './domain/Board.ts';
 
 const route = useRoute()
 const isHydrating = ref(false)
 
-const tasks = ref<Task[]>([])
-const categories = ref<CategoryData[]>([])
+const board = ref(new Board([], []))
 
 const categoriesContainer = ref<HTMLElement | null>(null)
 
 
 function handleAddTask(task: Task) {
-  console.log('adding task: ', task)
-  tasks.value.push(task)
-}
-
-function handleAddCategory(title: string) {
-  console.log('lista task', tasks.value)
-  categories.value.push({
-    title,
-    value: title
-      .toLowerCase()
-      .replace(/\s+/g, '-'),
-  })
-}
-
-function deleteCategory(categoryToDelete: string) {
-  console.log('deleting category: ', categoryToDelete)
-  categories.value = categories.value.filter(category => category.value !== categoryToDelete)
-  tasks.value = tasks.value.filter(task => task.category !== categoryToDelete)
+  board.value.addTask(task)
 }
 
 function deleteTask(taskToDelete: Task) {
-  console.log('deleting Task: ', taskToDelete)
-  tasks.value = tasks.value.filter(task => task !== taskToDelete)
+  board.value.deleteTask(taskToDelete)
 }
+
+function handleAddCategory(title: string) {
+  board.value.addCategory(title)
+}
+
+function deleteCategory(categoryToDelete: string) {
+  board.value.deleteCategory(categoryToDelete)
+}
+
 
 function toggleTask(taskToToggle: Task) {
-  taskToToggle.completed = !taskToToggle.completed
+  board.value.toggleTask(taskToToggle)
 }
 
-
-function getTasksByCategory(categoryValue: string) {
-  return tasks.value
-    .filter(task => task.category === categoryValue)
-    .sort((a, b) => a.order - b.order)
-}
 
 function reorderTask(payload: {
   oldIndex: number
   newIndex: number
   category: string
 }) {
-  console.log('reordering category', payload.category)
-
-  const categoryTasks = getTasksByCategory(
-    payload.category
-  )
-
-  
-  if (!categoryTasks.length) return
-  
-  console.log('categoryTasks', categoryTasks)
-  console.log('payload.oldIndex', payload.oldIndex)
-
-  const movedTask =
-  categoryTasks.splice(payload.oldIndex - 1, 1)[0]
-  
-  console.log('moved task', movedTask)
-  categoryTasks.splice(
-    payload.newIndex,
-    0,
-    movedTask
-  )
-
-  categoryTasks.forEach((task, index) => {
-    task.order = index
-  })
+  board.value.reorderTask(payload)
 }
 
 function moveTask(payload: {
@@ -95,77 +56,18 @@ function moveTask(payload: {
   newIndex: number
   newCategory: string
 }) {
-
-  const movedTask = tasks.value.find(task => task.id === payload.taskId)
-
-  if (!movedTask) return
-
-  console.log('moving task: ', movedTask.title)
-  console.log('oldCategory', movedTask.category)
-  console.log('newCategory', payload.newCategory)
-
-  const oldCategory = movedTask.category
-  movedTask.category = payload.newCategory
-
-  const newCategoryTasks = getTasksByCategory(payload.newCategory).filter(task => task.id !== movedTask.id)
-
-  newCategoryTasks.splice(
-    payload.newIndex,
-    0,
-    movedTask
-  )
-
-  newCategoryTasks.forEach((task, index) => {
-    task.order = index
-  })
-
-  const oldCategoryTasks = getTasksByCategory(
-    oldCategory
-  )
-
-  oldCategoryTasks.forEach((task, index) => {
-    task.order = index
-  })
-
+  board.value.moveTask(payload)
 }
 
 function updateTask(payload: {
   taskId: string
   title: string
-}){
-
-  let taskToEdit = tasks.value.find(task => task.id === payload.taskId)
-
-  if(taskToEdit){
-    taskToEdit.title = payload.title
-  } else {
-    return
-  }
+}) {
+  board.value.updateTask(payload)
 }
 
 function exportAll() {
-
-  const rows = categories.value.map(category => {
-    const filteredTasks = tasks.value
-      .filter(t => t.category === category.value)
-      .sort(function (a, b) { return a.order - b.order })
-      .map(t => t.title)
-
-    return category.value + '\n\n' + filteredTasks.join('\n') + '\n\n'
-  })
-
-  let content = rows.join('\n')
-
-  const blob = new Blob([content], {
-    type: 'text/plain',
-  })
-
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `MyBoard.txt`
-  link.click()
-  URL.revokeObjectURL(url)
+  board.value.exportAll()
 }
 
 onMounted(() => {
@@ -186,7 +88,7 @@ onMounted(() => {
         return
       }
 
-      const updatedCategories = [...categories.value]
+      const updatedCategories = [...board.value.categories]
 
       const movedCategory =
         updatedCategories.splice(event.oldIndex, 1)[0]
@@ -197,7 +99,7 @@ onMounted(() => {
         movedCategory
       )
 
-      categories.value = updatedCategories
+      board.value.categories = updatedCategories
     },
   })
 })
@@ -217,8 +119,8 @@ watch(
       const board = await getBoard(boardId as string)
 
       // hydrate stato
-      tasks.value = board.tasks
-      categories.value = board.categories
+      board.tasks = board.tasks
+      board.categories = board.categories
 
       // aspetta update reactive Vue
       await nextTick()
@@ -238,13 +140,13 @@ watch(
 
 const debouncedSave = debounce(async () => {
   const uuid = route.params.boardId as string
-  
+
   if (!uuid) return
   try {
     await saveBoard(
       uuid,
-      tasks.value,
-      categories.value
+      board.value.tasks,
+      board.value.categories
     )
 
     console.log('board saved')
@@ -254,9 +156,9 @@ const debouncedSave = debounce(async () => {
 }, 500)
 
 watch(
-   [
-    () => tasks.value,
-    () => categories.value,
+  [
+    () => board.value.tasks,
+    () => board.value.categories,
   ],
   () => {
 
@@ -274,14 +176,16 @@ watch(
   <main class="min-h-screen p-8" :class="defaultPalette.background">
 
     <NewTask @add-task="handleAddTask" @add-category="handleAddCategory" @delete-category="deleteCategory"
-      :categories="categories" />
-    <button class="my-4 p-2 font-bold text-white rounded-xl cursor-pointer" :class="defaultPalette.button_primary" @click="exportAll">Export
+      :categories="board.categories" />
+    <button class="my-4 p-2 font-bold text-white rounded-xl cursor-pointer" :class="defaultPalette.button_primary"
+      @click="exportAll">Export
       All</button>
 
     <div class="flex gap-5 mt-5 overflow-x-auto md:grid md:grid-cols-2 xl:grid-cols-3" ref="categoriesContainer">
-      <TaskColumn class="shrink-0 w-[80vw] md:w-auto" v-for="category in categories" :key="category.value" :title="category.title"
-        :category="category.value" :tasks="getTasksByCategory(category.value)" @delete-task="deleteTask"
-        @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask" @update-task="updateTask" />
+      <TaskColumn class="shrink-0 w-[80vw] md:w-auto" v-for="category in board.categories" :key="category.value"
+        :title="category.title" :category="category.value" :tasks="board.getTasksByCategory(category.value)"
+        @delete-task="deleteTask" @toggle-task="toggleTask" @reorder-task="reorderTask" @move-task="moveTask"
+        @update-task="updateTask" />
     </div>
   </main>
 </template>
