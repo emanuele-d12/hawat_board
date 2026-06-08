@@ -13,6 +13,11 @@ import { getBoard, saveBoard } from './services/api.ts';
 import type { Task } from './types/task'
 import { Board } from './domain/Board.ts';
 
+import { CommandBus } from './commands/CommandBus.ts';
+import { AddTaskCommand } from './commands/AddTaskCommand.ts';
+
+const commandBus = new CommandBus();
+
 const route = useRoute()
 const isHydrating = ref(false)
 
@@ -22,7 +27,12 @@ const categoriesContainer = ref<HTMLElement | null>(null)
 
 
 function handleAddTask(task: Task) {
-  board.value.addTask(task)
+  commandBus.execute(
+    new AddTaskCommand(
+      board.value,
+      task
+    )
+  )
 }
 
 function deleteTask(taskToDelete: Task) {
