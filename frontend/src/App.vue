@@ -15,6 +15,7 @@ import { Board } from './domain/Board.ts';
 
 import { CommandBus } from './commands/CommandBus.ts';
 import { AddTaskCommand } from './commands/AddTaskCommand.ts';
+import { DeleteTaskCommand } from './commands/DeleteTaskCommand.ts';
 
 const commandBus = new CommandBus();
 
@@ -36,7 +37,12 @@ function handleAddTask(task: Task) {
 }
 
 function deleteTask(taskToDelete: Task) {
-  board.value.deleteTask(taskToDelete)
+  commandBus.execute(
+    new DeleteTaskCommand(
+      board.value,
+      taskToDelete
+    )
+  )
 }
 
 function handleAddCategory(title: string) {
