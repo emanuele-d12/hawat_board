@@ -16,6 +16,12 @@ import { Board } from './domain/Board.ts';
 import { CommandBus } from './commands/CommandBus.ts';
 import { AddTaskCommand } from './commands/AddTaskCommand.ts';
 import { DeleteTaskCommand } from './commands/DeleteTaskCommand.ts';
+import { AddCategoryCommand } from './commands/AddCategoryCommand.ts';
+import { DeleteCategoryCommand } from './commands/DeleteCategoryCommand.ts';
+import { ToggleTaskCommand } from './commands/ToggleTaskCommand.ts';
+import { ReorderTaskCommand } from './commands/ReorderTaskCommand.ts';
+import { MoveTaskCommand } from './commands/MoveTaskCommand.ts';
+import { UpdateTaskCommand } from './commands/UpdateTaskCommand.ts';
 
 const commandBus = new CommandBus();
 
@@ -36,6 +42,16 @@ function handleAddTask(task: Task) {
   )
 }
 
+function updateTask(payload: {
+  taskId: string
+  title: string
+}) {
+    commandBus.execute(new UpdateTaskCommand(
+    board.value, 
+    payload
+  ))
+}
+
 function deleteTask(taskToDelete: Task) {
   commandBus.execute(
     new DeleteTaskCommand(
@@ -46,16 +62,31 @@ function deleteTask(taskToDelete: Task) {
 }
 
 function handleAddCategory(title: string) {
-  board.value.addCategory(title)
+  commandBus.execute(
+    new AddCategoryCommand(
+      board.value,
+      title
+    )
+  )
 }
 
 function deleteCategory(categoryToDelete: string) {
-  board.value.deleteCategory(categoryToDelete)
+  commandBus.execute(
+    new DeleteCategoryCommand(
+      board.value,
+      categoryToDelete
+    )
+  )
 }
 
 
 function toggleTask(taskToToggle: Task) {
-  board.value.toggleTask(taskToToggle)
+  commandBus.execute(
+    new ToggleTaskCommand(
+      board.value,
+      taskToToggle
+    )
+  )
 }
 
 
@@ -64,7 +95,12 @@ function reorderTask(payload: {
   newIndex: number
   category: string
 }) {
-  board.value.reorderTask(payload)
+  commandBus.execute(
+    new ReorderTaskCommand(
+      board.value,
+      payload
+      )
+  )
 }
 
 function moveTask(payload: {
@@ -72,15 +108,14 @@ function moveTask(payload: {
   newIndex: number
   newCategory: string
 }) {
-  board.value.moveTask(payload)
+  commandBus.execute(
+    new MoveTaskCommand(
+      board.value,
+      payload
+      )
+  )
 }
 
-function updateTask(payload: {
-  taskId: string
-  title: string
-}) {
-  board.value.updateTask(payload)
-}
 
 function exportAll() {
   board.value.exportAll()
