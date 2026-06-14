@@ -23,8 +23,14 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 })
 
-const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+
+function uuidCheck(uuid: string) {
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    return uuidRegex.test(uuid)
+
+}
 
 
 app.post('/api/boards', async (req, res) => {
@@ -67,7 +73,7 @@ app.put('/api/boards/:uuid', async (req, res) => {
     console.log('calling PUT /api/boards/:uuid')
     const { uuid } = req.params
 
-    if (!uuidRegex.test(uuid)) {
+    if (!uuidCheck(uuid)) {
         console.log('not a valid uuid')
         res.status(401).json({
             error: 'Not valid uuid :('
@@ -80,12 +86,9 @@ app.put('/api/boards/:uuid', async (req, res) => {
 
     const board = {
         uuid,
-        tasks: req.body.tasks,
+        tasks:  req.body.tasks,
         categories: req.body.categories,
     }
-
-    // console.log('board to overwrite: ', filePath)
-    // console.log('new data: ', board)
 
     try {
         await fs.writeFile(
@@ -113,7 +116,7 @@ app.get('/api/boards/:uuid', async (req, res) => {
 
     const { uuid } = req.params
 
-    if (!uuidRegex.test(uuid)) {
+    if (!uuidCheck(uuid)) {
         console.log('not a valid uuid')
         res.status(401).json({
             error: 'Not valid uuid :('
