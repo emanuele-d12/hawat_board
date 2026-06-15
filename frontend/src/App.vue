@@ -167,11 +167,13 @@ watch(
 
     try {
 
-      const board = await getBoard(boardId as string)
+      const boardData = await getBoard(boardId as string)
 
       // hydrate stato
-      board.tasks = board.tasks
-      board.categories = board.categories
+      board.value = new Board(
+        boardData.tasks,
+        boardData.categories
+      )
 
       // aspetta update reactive Vue
       await nextTick()
@@ -202,7 +204,7 @@ const debouncedSave = debounce(async () => {
 
     console.log('board saved')
   } catch (error) {
-    console.error(error)
+    console.error('Error in Debounce Save', error)
   }
 }, 500)
 
