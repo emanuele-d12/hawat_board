@@ -5,12 +5,12 @@ import type { Command } from "./Command";
 
 export class ToggleTaskCommand implements Command{
 
-    private task: Task
     private board: Board
+    private task: Task
 
     constructor(
-        task: Task,
-        board: Board
+        board: Board,
+        task: Task
     ) {
         this.board = board
         this.task = task
