@@ -1,3 +1,11 @@
+import {
+    PutCommand,
+    GetCommand,
+} from '@aws-sdk/lib-dynamodb'
+
+import { dynamo } from '../config/dynamo.js'
+import { env } from '../config/env.js'
+
 import type { Board } from '../models/Board.js'
 import type { IBoardRepository } from './IBoardRepository.js'
 
@@ -6,20 +14,15 @@ class DynamoBoardRepository
 
     async create(board: Board): Promise<void> {
 
-        throw new Error(
-            'DynamoDB repository not implemented'
+        await dynamo.send(
+            new PutCommand({
+                TableName: env.dynamoTable,
+                Item: {
+                    uuid: board.uuid,
+                    board,
+                },
+            })
         )
-
-    }
-
-    async findById(
-        uuid: string
-    ): Promise<Board | null> {
-
-        throw new Error(
-            'DynamoDB repository not implemented'
-        )
-
     }
 
     async update(
@@ -27,10 +30,29 @@ class DynamoBoardRepository
         board: Board
     ): Promise<void> {
 
-        throw new Error(
-            'DynamoDB repository not implemented'
+        await this.create(board)
+
+    }
+
+    async findById(
+        uuid: string
+    ): Promise<Board | null> {
+
+        const result = await dynamo.send(
+            new GetCommand({
+                TableName: env.dynamoTable,
+                Key: {
+                    uuid,
+                },
+            })
+
         )
 
+        if (!result.Item) {
+            return null
+        }
+        
+        return result.Item.board as Board
     }
 
 }

@@ -10,6 +10,7 @@ import healthRoutes
     from './routes/health.routes.js'
 
 import boardRoutes from './routes/board.routes.js'
+import infoRoutes from './routes/info.routes.js'
 
 
 const app = express()
@@ -19,6 +20,7 @@ app.use(express.json())
 app.use(instanceMiddleware)
 app.use('/health', healthRoutes)
 app.use('/api/boards', boardRoutes)
+app.use('/info', infoRoutes)
 
 //sempre per ultimo
 app.use(errorHandler)

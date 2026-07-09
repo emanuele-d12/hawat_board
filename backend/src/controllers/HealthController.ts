@@ -8,19 +8,12 @@ class HealthController {
         _req: Request,
         res: Response
     ) {
-
         return res.json({
-
             status: 'UP',
-
             instance: env.instanceName,
-
             version: env.version,
-
         })
-
     }
-
 }
 
 export default new HealthController()
