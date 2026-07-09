@@ -1,48 +1,28 @@
 import crypto from 'crypto'
-import fs from 'fs/promises'
-import path from 'path'
 
-const DATA_DIR = path.resolve(
-    process.env.DATA_DIR || './data/'
-)
+import JsonBoardRepository from '../repositories/JsonBoardRepository'
 
 class BoardService {
 
-    async createBoard() {
-        const uuid = crypto.randomUUID()
+    constructor(
+        private repository = new JsonBoardRepository()
+    ) {}
 
-        await fs.mkdir(DATA_DIR, {
-            recursive: true,
-        })
+    async createBoard() {
 
         const board = {
-            uuid,
+            uuid: crypto.randomUUID(),
             categories: [],
             tasks: [],
             createdAt: Date.now(),
         }
-
-        await fs.writeFile(
-            path.join(DATA_DIR, 'json', `${uuid}.json`),
-            JSON.stringify(board, null, 2)
-        )
-
+        await this.repository.create(board)
         return board
+
     }
 
     async getBoard(uuid: string) {
-        const filePath = path.join(
-            DATA_DIR,
-            'json',
-            `${uuid}.json`
-        )
-
-        const content = await fs.readFile(
-            filePath,
-            'utf8'
-        )
-
-        return JSON.parse(content)
+        return this.repository.findById(uuid)
     }
 
     async updateBoard(
@@ -57,15 +37,9 @@ class BoardService {
             categories,
         }
 
-        const filePath = path.join(
-            DATA_DIR,
-            'json',
-            `${uuid}.json`
-        )
-
-        await fs.writeFile(
-            filePath,
-            JSON.stringify(board, null, 2)
+        await this.repository.update(
+            uuid,
+            board
         )
     }
 }
