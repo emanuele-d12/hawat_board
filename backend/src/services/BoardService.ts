@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 
 import type { IBoardRepository } from '../repositories/IBoardRepository.js'
-import type {Task, Category} from '../models/Board.js'
+import type { Task, Category } from '../models/Board.js'
 
 class BoardService {
 
@@ -30,18 +30,21 @@ class BoardService {
     async updateBoard(
         uuid: string,
         tasks: Task[],
-        categories: Category[],
-        createdAt: number
-    ) {
+        categories: Category[]
+    ): Promise<void> {
+        const board = await this.repository.findById(uuid)
+        if (!board) {
 
-        const board = {
-            uuid,
-            tasks,
-            categories,
-            createdAt
+            throw new Error('Board not found')
+
         }
+        board.tasks = tasks
+        board.categories = categories
+        await this.repository.update(
+            uuid,
+            board
+        )
 
-        await this.repository.update(uuid, board)
     }
 }
 
