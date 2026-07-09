@@ -1,9 +1,10 @@
+import type { Board } from '../models/Board.js'
 import type { IBoardRepository } from './IBoardRepository.js'
 
 class DynamoBoardRepository
     implements IBoardRepository {
 
-    async create(board: unknown): Promise<void> {
+    async create(board: Board): Promise<void> {
 
         throw new Error(
             'DynamoDB repository not implemented'
@@ -11,7 +12,9 @@ class DynamoBoardRepository
 
     }
 
-    async findById(uuid: string): Promise<any> {
+    async findById(
+        uuid: string
+    ): Promise<Board | null> {
 
         throw new Error(
             'DynamoDB repository not implemented'
@@ -21,7 +24,7 @@ class DynamoBoardRepository
 
     async update(
         uuid: string,
-        board: unknown
+        board: Board
     ): Promise<void> {
 
         throw new Error(

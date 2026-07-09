@@ -1,22 +1,24 @@
 import fs from 'fs/promises'
 import path from 'path'
 
-import type {
-    IBoardRepository,
-    BoardData,
-} from './IBoardRepository.js'
+import type { Board } from '../models/Board.js'
+import type { IBoardRepository } from './IBoardRepository.js'
 
 const DATA_DIR = path.resolve(
     process.env.DATA_DIR || './data/'
 )
 
-class JsonBoardRepository implements IBoardRepository {
+class JsonBoardRepository
+    implements IBoardRepository {
 
-    async create(board: BoardData): Promise<void> {
+    async create(board: Board): Promise<void> {
 
-        await fs.mkdir(DATA_DIR, {
-            recursive: true,
-        })
+        await fs.mkdir(
+            path.join(DATA_DIR, 'json'),
+            {
+                recursive: true,
+            }
+        )
 
         await fs.writeFile(
             path.join(
@@ -26,26 +28,37 @@ class JsonBoardRepository implements IBoardRepository {
             ),
             JSON.stringify(board, null, 2)
         )
+
     }
 
-    async findById(uuid: string): Promise<BoardData> {
+    async findById(
+        uuid: string
+    ): Promise<Board | null> {
 
-        const filePath = path.join(
-            DATA_DIR,
-            'json',
-            `${uuid}.json`
-        )
+        try {
 
-        const content =
-            await fs.readFile(filePath, 'utf8')
+            const filePath = path.join(
+                DATA_DIR,
+                'json',
+                `${uuid}.json`
+            )
 
-        return JSON.parse(content) as BoardData
+            const content =
+                await fs.readFile(filePath, 'utf8')
+
+            return JSON.parse(content) as Board
+
+        } catch {
+
+            return null
+
+        }
 
     }
 
     async update(
         uuid: string,
-        board: BoardData
+        board: Board
     ): Promise<void> {
 
         const filePath = path.join(

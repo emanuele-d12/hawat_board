@@ -15,4 +15,11 @@ export const env = {
     persistence:
         process.env.PERSISTENCE || 'json',
 
+    awsRegion:
+        process.env.AWS_REGION || 'eu-north-1',
+
+    dynamoTable:
+        process.env.DYNAMODB_TABLE || 'hawat-board',
+
+
 }

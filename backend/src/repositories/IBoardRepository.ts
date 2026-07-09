@@ -1,19 +1,12 @@
-export interface BoardData {
-    uuid: string
-    categories: unknown[]
-    tasks: unknown[]
-    createdAt?: number
-}
+import type { Board } from '../models/Board.js'
 
-export interface IBoardRepository {
-
-    create(board: BoardData): Promise<void>
-
-    findById(uuid: string): Promise<BoardData>
-
+interface IBoardRepository {
+    create(board: Board): Promise<void>
+    findById(uuid: string): Promise<Board | null>
     update(
         uuid: string,
-        board: BoardData
+        board: Board
     ): Promise<void>
-
 }
+
+export type { IBoardRepository }
