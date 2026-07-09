@@ -12,4 +12,7 @@ export const env = {
     version:
         process.env.APP_VERSION || '1.0.0',
 
+    persistence:
+        process.env.PERSISTENCE || 'json',
+
 }

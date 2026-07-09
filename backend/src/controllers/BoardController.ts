@@ -1,11 +1,20 @@
-import { boardService } from '../config/container'
+import type { Request, Response } from 'express'
+
+import { boardService } from '../config/container.js'
+
+interface BoardParams {
+    uuid: string
+}
 
 const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 class BoardController {
 
-    async createBoard(_req, res) {
+    async createBoard(
+        _req: Request,
+        res: Response
+    ) {
 
         try {
 
@@ -26,7 +35,10 @@ class BoardController {
 
     }
 
-    async getBoard(req, res) {
+    async getBoard(
+        req: Request<BoardParams>,
+        res: Response
+    ) {
 
         const { uuid } = req.params
 
@@ -57,7 +69,10 @@ class BoardController {
 
     }
 
-    async updateBoard(req, res) {
+    async updateBoard(
+        req: Request<BoardParams>,
+        res: Response
+    ) {
 
         const { uuid } = req.params
 

@@ -3,13 +3,13 @@ import cors from 'cors'
 import 'dotenv/config'
 
 import { instanceMiddleware }
-    from './middleware/instance'
-import errorHandler from './middleware/errorHandler'
+    from './middleware/instance.js'
+import errorHandler from './middleware/errorHandler.js'
 
 import healthRoutes
-    from './routes/health.routes'
+    from './routes/health.routes.js'
 
-import boardRoutes from './routes/board.routes'
+import boardRoutes from './routes/board.routes.js'
 
 
 const app = express()

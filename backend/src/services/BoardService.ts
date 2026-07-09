@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-import type { IBoardRepository } from '../repositories/IBoardRepository'
+import type { IBoardRepository } from '../repositories/IBoardRepository.js'
 
 class BoardService {
 

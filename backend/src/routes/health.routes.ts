@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import healthController
-    from '../controllers/HealthController'
+    from '../controllers/HealthController.js'
 
 const router = Router()
 

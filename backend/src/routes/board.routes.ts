@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import boardController from '../controllers/BoardController'
+import boardController from '../controllers/BoardController.js'
 
 const router = Router()
 

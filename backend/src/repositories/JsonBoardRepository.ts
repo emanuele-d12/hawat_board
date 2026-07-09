@@ -1,7 +1,10 @@
 import fs from 'fs/promises'
 import path from 'path'
 
-import type { IBoardRepository } from './IBoardRepository'
+import type {
+    IBoardRepository,
+    BoardData,
+} from './IBoardRepository.js'
 
 const DATA_DIR = path.resolve(
     process.env.DATA_DIR || './data/'
@@ -9,7 +12,7 @@ const DATA_DIR = path.resolve(
 
 class JsonBoardRepository implements IBoardRepository {
 
-    async create(board: any): Promise<void> {
+    async create(board: BoardData): Promise<void> {
 
         await fs.mkdir(DATA_DIR, {
             recursive: true,
@@ -25,7 +28,7 @@ class JsonBoardRepository implements IBoardRepository {
         )
     }
 
-    async findById(uuid: string): Promise<any> {
+    async findById(uuid: string): Promise<BoardData> {
 
         const filePath = path.join(
             DATA_DIR,
@@ -36,13 +39,13 @@ class JsonBoardRepository implements IBoardRepository {
         const content =
             await fs.readFile(filePath, 'utf8')
 
-        return JSON.parse(content)
+        return JSON.parse(content) as BoardData
 
     }
 
     async update(
         uuid: string,
-        board: any
+        board: BoardData
     ): Promise<void> {
 
         const filePath = path.join(

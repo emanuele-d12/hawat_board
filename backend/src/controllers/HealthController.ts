@@ -1,8 +1,13 @@
-import { env } from '../config/env'
+import type { Request, Response } from 'express'
+
+import { env } from '../config/env.js'
 
 class HealthController {
 
-    getHealth(_req, res) {
+    getHealth(
+        _req: Request,
+        res: Response
+    ) {
 
         return res.json({
 

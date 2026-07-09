@@ -1,9 +1,19 @@
+export interface BoardData {
+    uuid: string
+    categories: unknown[]
+    tasks: unknown[]
+    createdAt?: number
+}
+
 export interface IBoardRepository {
 
-    create(board: unknown): Promise<void>
+    create(board: BoardData): Promise<void>
 
-    findById(uuid: string): Promise<any>
+    findById(uuid: string): Promise<BoardData>
 
-    update(uuid: string, board: unknown): Promise<void>
+    update(
+        uuid: string,
+        board: BoardData
+    ): Promise<void>
 
 }

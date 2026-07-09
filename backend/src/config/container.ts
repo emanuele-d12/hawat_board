@@ -1,11 +1,15 @@
-import JsonBoardRepository from '../repositories/JsonBoardRepository'
-import BoardService from '../services/BoardService'
+import { env } from './env.js'
 
-const boardRepository = new JsonBoardRepository()
+import type { IBoardRepository } from '../repositories/IBoardRepository.js'
 
-const boardService = new BoardService(boardRepository)
+import JsonBoardRepository from '../repositories/JsonBoardRepository.js'
+import DynamoBoardRepository from '../repositories/DynamoBoardRepository.js'
 
-export {
-    boardRepository,
-    boardService,
-}
+import BoardService from '../services/BoardService.js'
+
+const boardRepository: IBoardRepository =
+    env.persistence === 'dynamodb'
+        ? new DynamoBoardRepository()
+        : new JsonBoardRepository()
+
+export const boardService = new BoardService(boardRepository)
