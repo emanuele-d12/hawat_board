@@ -15,4 +15,5 @@ export interface Board {
     uuid: string
     tasks: Task[]
     categories: Category[]
+    createdAt: number
 }

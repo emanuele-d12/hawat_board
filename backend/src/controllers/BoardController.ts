@@ -89,7 +89,8 @@ class BoardController {
             await boardService.updateBoard(
                 uuid,
                 req.body.tasks,
-                req.body.categories
+                req.body.categories,
+                Date.now()
             )
 
             return res.json({
