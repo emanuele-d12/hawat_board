@@ -1,11 +1,11 @@
 import crypto from 'crypto'
 
-import JsonBoardRepository from '../repositories/JsonBoardRepository'
+import type { IBoardRepository } from '../repositories/IBoardRepository'
 
 class BoardService {
 
     constructor(
-        private repository = new JsonBoardRepository()
+        private repository: IBoardRepository
     ) {}
 
     async createBoard() {
@@ -16,9 +16,10 @@ class BoardService {
             tasks: [],
             createdAt: Date.now(),
         }
-        await this.repository.create(board)
-        return board
 
+        await this.repository.create(board)
+
+        return board
     }
 
     async getBoard(uuid: string) {
@@ -37,11 +38,8 @@ class BoardService {
             categories,
         }
 
-        await this.repository.update(
-            uuid,
-            board
-        )
+        await this.repository.update(uuid, board)
     }
 }
 
-export default new BoardService()
+export default BoardService
