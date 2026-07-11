@@ -11,6 +11,7 @@ import healthRoutes
 
 import boardRoutes from './routes/board.routes.js'
 import infoRoutes from './routes/info.routes.js'
+import StatusRoutes from './routes/status.routes.js'
 
 
 const app = express()
@@ -22,6 +23,7 @@ app.use(cors())
 app.use(express.json())
 app.use(instanceMiddleware)
 app.use('/health', healthRoutes)
+app.use('/status', StatusRoutes)
 app.use('/api/boards', boardRoutes)
 app.use('/info', infoRoutes)
 
