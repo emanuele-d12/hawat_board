@@ -1,5 +1,5 @@
 import 'dotenv/config'
-
+import os from 'node:os'
 
 export const env = {
 
@@ -8,7 +8,7 @@ export const env = {
     dataDir: process.env.DATA_DIR || './data/',
 
     instanceName:
-        process.env.INSTANCE_NAME || 'node-1',
+        process.env.INSTANCE_NAME || os.hostname(),
 
     version:
         process.env.APP_VERSION || '1.0.0',
