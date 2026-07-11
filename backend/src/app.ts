@@ -14,7 +14,10 @@ import infoRoutes from './routes/info.routes.js'
 
 
 const app = express()
-
+app.set(
+    'trust proxy',
+    true
+)
 app.use(cors())
 app.use(express.json())
 app.use(instanceMiddleware)
